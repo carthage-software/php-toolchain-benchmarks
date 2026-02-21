@@ -40,20 +40,19 @@ final readonly class MemoryResult
     {
         $descriptors = [
             0 => ['pipe', 'r'],
-            1 => ['pipe', 'w'],
-            2 => ['pipe', 'w'],
+            1 => ['file', '/dev/null', 'w'],
+            2 => ['file', '/dev/null', 'w'],
         ];
 
         /** @var array<int, resource> $pipes */
         $pipes = [];
+        // @mago-expect analysis:possibly-invalid-argument - stupid static analyzer!
         $proc = proc_open(['sh', '-c', $command], $descriptors, $pipes, '/tmp');
         if ($proc === false) {
             return new self($analyzerName, null);
         }
 
         fclose($pipes[0]);
-        stream_set_blocking($pipes[1], false);
-        stream_set_blocking($pipes[2], false);
 
         /** @var array{running: bool, pid: int} $status */
         $status = proc_get_status($proc);
@@ -64,10 +63,6 @@ final readonly class MemoryResult
             $rss = self::getProcessTreeRssKb($pid);
             $peakRssKb = Math\maxva($peakRssKb, $rss);
 
-            // Drain pipes to prevent the child from blocking on full pipe buffers
-            stream_get_contents($pipes[1]);
-            stream_get_contents($pipes[2]);
-
             Async\sleep(Duration::milliseconds(100));
             $status = proc_get_status($proc);
         }
@@ -76,8 +71,6 @@ final readonly class MemoryResult
         $rss = self::getProcessTreeRssKb($pid);
         $peakRssKb = Math\maxva($peakRssKb, $rss);
 
-        fclose($pipes[1]);
-        fclose($pipes[2]);
         proc_close($proc);
 
         if ($peakRssKb === 0) {
