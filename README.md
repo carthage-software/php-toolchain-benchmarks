@@ -4,25 +4,25 @@ Reproducible benchmark suite for PHP static analyzers: **Mago**, **PHPStan**, **
 
 Measures execution time (via [hyperfine](https://github.com/sharkdp/hyperfine)) and peak memory (via process tree RSS polling) across real-world PHP projects.
 
-## Benchmark Categories
+## Benchmark Types
 
-| Category        | Description                                       | Analyzers            |
-| --------------- | ------------------------------------------------- | -------------------- |
-| **Uncached**    | Cold start, no cache                              | All                  |
-| **Incremental** | Cache invalidation after file change (4 variants) | PHPStan, Psalm, Phan |
+All analyzers run in every benchmark type:
 
-Incremental variants:
+| Type                    | Description                                  |
+| ----------------------- | -------------------------------------------- |
+| **Uncached**            | Cold start, all caches cleared               |
+| **Cache hit**           | Warm cache, no file changes                  |
+| **Cache miss: mtime**   | `touch` the target file (mtime invalidation) |
+| **Cache miss: no-op**   | Append a no-op statement                     |
+| **Cache miss: logic**   | Append a real code change                    |
 
-- **No change** - cache hit, no file modification
-- **Touch** - `touch` the file (mtime only)
-- **No-op change** - append a no-op statement
-- **Logic change** - append a real code change
+Peak memory is measured separately at the end using process tree RSS polling during an uncached run.
 
 ## Target Projects
 
 | Project                                                             | Size  | Type                |
 | ------------------------------------------------------------------- | ----- | ------------------- |
-| [azjezz/psl](https://github.com/azjezz/psl)                         | Small | Well-typed library  |
+| [azjezz/psl](https://github.com/azjezz/psl)                       | Small | Well-typed library  |
 | [wordpress-develop](https://github.com/WordPress/wordpress-develop) | Large | Untyped application |
 
 ## Prerequisites
@@ -67,7 +67,7 @@ Results are saved to `results/YYYYMMDD-HHMMSS/` with:
 - `report.md` - Final report in Markdown format
 - `report.json` - Structured JSON report
 - `summary.md` - Combined hyperfine results
-- `<project>/` - Per-project hyperfine JSON/Markdown and raw memory output
+- `<project>/` - Per-project hyperfine JSON/Markdown
 
 The final report highlights the fastest analyzer per category with a trophy and shows relative performance (e.g., x5.2 slower than the winner).
 

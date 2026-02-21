@@ -9,7 +9,7 @@ use CarthageSoftware\StaticAnalyzersBenchmark\Benchmark\BenchmarkFilter;
 use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\Analyzer;
 use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\BenchmarkCategory;
 use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\Project;
-use CarthageSoftware\StaticAnalyzersBenchmark\Support\Console;
+use CarthageSoftware\StaticAnalyzersBenchmark\Support\Output;
 use Psl\Iter;
 use Psl\Math;
 use Psl\Str;
@@ -86,26 +86,26 @@ final class Application
 
     private static function printUsage(): int
     {
-        Console::write('PHP Static Analyzer Benchmarks');
-        Console::blank();
-        Console::write('Usage:');
-        Console::write('  bin/benchmark setup                Setup: clone projects, install deps');
-        Console::write('  bin/benchmark run [OPTIONS]        Run benchmarks');
-        Console::blank();
-        Console::write('Options:');
-        Console::write('  --runs N           Number of benchmark runs (default: 10)');
-        Console::write('  --warmup N         Number of warmup runs (default: 2)');
-        Console::write('  --project NAME     Only benchmark: psl, wordpress');
-        Console::write('  --analyzer NAME    Only benchmark: mago, phpstan, psalm, phan');
-        Console::write('  --category NAME    Only run: uncached, incremental');
-        Console::write('  --skip-stability   Skip CPU stability check');
+        Output::write('PHP Static Analyzer Benchmarks');
+        Output::blank();
+        Output::write('Usage:');
+        Output::write('  bin/benchmark setup                Setup: clone projects, install deps');
+        Output::write('  bin/benchmark run [OPTIONS]        Run benchmarks');
+        Output::blank();
+        Output::write('Options:');
+        Output::write('  --runs N           Number of benchmark runs (default: 10)');
+        Output::write('  --warmup N         Number of warmup runs (default: 2)');
+        Output::write('  --project NAME     Only benchmark: psl, wordpress');
+        Output::write('  --analyzer NAME    Only benchmark: mago, phpstan, psalm, phan');
+        Output::write('  --category NAME    Only run: uncached, incremental');
+        Output::write('  --skip-stability   Skip CPU stability check');
 
         return 0;
     }
 
     private static function unknownCommand(string $command): int
     {
-        Console::error(Str\format('Unknown command: %s', $command));
+        Output::error(Str\format('Unknown command: %s', $command));
         self::printUsage();
         return 1;
     }

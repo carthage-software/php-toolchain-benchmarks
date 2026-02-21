@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace CarthageSoftware\StaticAnalyzersBenchmark;
 
 use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\Analyzer;
-use CarthageSoftware\StaticAnalyzersBenchmark\Support\Console;
+use CarthageSoftware\StaticAnalyzersBenchmark\Support\Output;
 use Psl\File;
 use Psl\Filesystem;
 use Psl\Json;
@@ -45,7 +45,7 @@ final readonly class ToolInstaller
      */
     public static function install(string $rootDir): bool
     {
-        Console::heading('Installing isolated analyzer tools');
+        Output::section('Installing isolated analyzer tools');
 
         $toolsDir = $rootDir . '/tools';
         Filesystem\create_directory($toolsDir);
@@ -87,7 +87,7 @@ final readonly class ToolInstaller
 
         File\write($composerJson, $composerContent, File\WriteMode::MustCreate);
 
-        Console::info(Str\format('Installing %s (%s)...', $analyzer->getDisplayName(), $version));
+        Output::info(Str\format('Installing %s (%s)...', $analyzer->getDisplayName(), $version));
         try {
             Shell\execute('composer', ['install', '--no-interaction'], $toolDir);
 
@@ -95,10 +95,10 @@ final readonly class ToolInstaller
                 Shell\execute('composer', ['mago:install-binary', '--no-interaction'], $toolDir);
             }
 
-            Console::success(Str\format('%s installed', $analyzer->getDisplayName()));
+            Output::success(Str\format('%s installed', $analyzer->getDisplayName()));
             return true;
         } catch (Shell\Exception\FailedExecutionException $e) {
-            Console::error(Str\format('Failed to install %s: %s', $analyzer->getDisplayName(), $e->getErrorOutput()));
+            Output::error(Str\format('Failed to install %s: %s', $analyzer->getDisplayName(), $e->getErrorOutput()));
             return false;
         }
     }

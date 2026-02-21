@@ -6,7 +6,7 @@ namespace CarthageSoftware\StaticAnalyzersBenchmark\Benchmark;
 
 use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\Analyzer;
 use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\Project;
-use CarthageSoftware\StaticAnalyzersBenchmark\Support\Console;
+use CarthageSoftware\StaticAnalyzersBenchmark\Support\Output;
 use Psl\Filesystem;
 use Psl\Str;
 
@@ -26,12 +26,12 @@ final readonly class Discovery
             }
 
             if (!$analyzer->isAvailable($rootDir)) {
-                Console::warn(Str\format('%s is not available, skipping', $analyzer->getDisplayName()));
+                Output::warn(Str\format('%s is not available, skipping', $analyzer->getDisplayName()));
                 continue;
             }
 
             $analyzers[] = $analyzer;
-            Console::success(Str\format(
+            Output::success(Str\format(
                 'Found analyzer: %s (cache: %s)',
                 $analyzer->getDisplayName(),
                 $analyzer->supportsCaching() ? 'yes' : 'no',
@@ -56,12 +56,12 @@ final readonly class Discovery
 
             $ws = Str\format('%s/%s', $workspaceDir, $project->value);
             if (!Filesystem\exists($ws)) {
-                Console::warn(Str\format('Project %s not set up (workspace missing), skipping', $project->value));
+                Output::warn(Str\format('Project %s not set up (workspace missing), skipping', $project->value));
                 continue;
             }
 
             $projects[] = $project;
-            Console::success(Str\format('Found project: %s', $project->getDisplayName()));
+            Output::success(Str\format('Found project: %s', $project->getDisplayName()));
         }
 
         return $projects;

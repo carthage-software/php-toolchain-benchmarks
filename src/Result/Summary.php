@@ -45,15 +45,26 @@ final class Summary
     }
 
     /**
-     * @param non-empty-string       $categoryName
-     * @param list<MemoryResult>     $memoryResults
-     * @param non-empty-string       $mdFile
+     * @param non-empty-string $mdFile
      */
-    public function writeCategory(string $categoryName, array $memoryResults, string $mdFile): void
+    public function writeBenchmarkType(string $label, string $mdFile): void
     {
-        $content = Str\format("### %s\n\n", $categoryName);
+        $content = Str\format("### %s\n\n", $label);
 
-        // Memory table
+        if (Filesystem\exists($mdFile)) {
+            $content .= File\read($mdFile);
+            $content .= "\n";
+        }
+
+        $this->append($content);
+    }
+
+    /**
+     * @param list<MemoryResult> $memoryResults
+     */
+    public function writeMemory(array $memoryResults): void
+    {
+        $content = "### Peak Memory (Uncached)\n\n";
         $content .= "| Analyzer | Peak Memory (MB) |\n";
         $content .= "|----------|------------------|\n";
 
@@ -62,13 +73,6 @@ final class Summary
         }
 
         $content .= "\n";
-
-        // Append hyperfine markdown table if available
-        if (Filesystem\exists($mdFile)) {
-            $content .= File\read($mdFile);
-            $content .= "\n";
-        }
-
         $this->append($content);
     }
 

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace CarthageSoftware\StaticAnalyzersBenchmark\Result;
 
-use CarthageSoftware\StaticAnalyzersBenchmark\Support\Console;
 use Psl\Async;
 use Psl\DateTime\Duration;
 use Psl\Iter;
@@ -49,8 +48,6 @@ final readonly class MemoryResult
         $pipes = [];
         $proc = proc_open(['sh', '-c', $command], $descriptors, $pipes, '/tmp');
         if ($proc === false) {
-            Console::warn('Failed to start process for memory measurement');
-
             return new self($analyzerName, null);
         }
 

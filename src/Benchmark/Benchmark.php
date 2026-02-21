@@ -9,8 +9,11 @@ use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\BenchmarkCategory;
 use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\Project;
 use CarthageSoftware\StaticAnalyzersBenchmark\Result\BenchmarkResults;
 use CarthageSoftware\StaticAnalyzersBenchmark\Result\Summary;
-use CarthageSoftware\StaticAnalyzersBenchmark\Support\Console;
+use CarthageSoftware\StaticAnalyzersBenchmark\Support\Output;
+use CarthageSoftware\StaticAnalyzersBenchmark\Support\Spinner;
+use Psl\DateTime;
 use Psl\Filesystem;
+use Psl\Iter;
 use Psl\Str;
 use Psl\Vec;
 
@@ -31,18 +34,19 @@ final readonly class Benchmark
 
     public function execute(): int
     {
+        $overallStart = DateTime\Timestamp::now();
         $workspaceDir = $this->rootDir . '/workspace';
         $cacheDir = $this->rootDir . '/cache';
 
         $analyzers = Discovery::analyzers($this->rootDir, $this->filter->analyzer);
         if ($analyzers === []) {
-            Console::error('No analyzers available. Run: bin/benchmark setup');
+            Output::error('No analyzers available. Run: bin/benchmark setup');
             return 1;
         }
 
         $projects = Discovery::projects($workspaceDir, $this->filter->project);
         if ($projects === []) {
-            Console::error('No projects available. Run: bin/benchmark setup');
+            Output::error('No projects available. Run: bin/benchmark setup');
             return 1;
         }
 
@@ -50,27 +54,31 @@ final readonly class Benchmark
         $resultsDir = Str\format('%s/results/%s', $this->rootDir, $timestamp);
         Filesystem\create_directory($resultsDir);
 
-        Console::heading('PHP Static Analyzer Benchmarks');
-        Console::info(Str\format('Runs: %d, Warmup: %d', $this->runs, $this->warmup));
-        Console::info(Str\format('Analyzers: %s', Str\join(
-            Vec\map($analyzers, static fn(Analyzer $a): string => $a->value),
-            ' ',
-        )));
-        Console::info(Str\format('Projects: %s', Str\join(
-            Vec\map($projects, static fn(Project $p): string => $p->value),
-            ' ',
-        )));
-        Console::info(Str\format('Results: %s', $resultsDir));
+        Output::blank();
+        Output::title('PHP Static Analyzer Benchmarks');
+        Output::blank();
+        Output::configLine('Runs', (string) $this->runs);
+        Output::configLine('Warmup', (string) $this->warmup);
+        Output::configLine('Analyzers', Str\join(
+            Vec\map($analyzers, static fn(Analyzer $a): string => $a->getDisplayName()),
+            ', ',
+        ));
+        Output::configLine('Projects', Str\join(
+            Vec\map($projects, static fn(Project $p): string => $p->getDisplayName()),
+            ', ',
+        ));
+        Output::configLine('Results', $resultsDir);
+        Output::blank();
 
         SystemStability::warn();
 
         if ($this->skipStability) {
-            Console::warn('Skipping system stability check (--skip-stability)');
+            Output::warn('Skipping system stability check (--skip-stability)');
         }
 
         if (!$this->skipStability && !SystemStability::check()) {
-            Console::error('Aborting benchmarks due to unstable system.');
-            Console::error('Use --skip-stability to bypass this check.');
+            Output::error('Aborting benchmarks due to unstable system.');
+            Output::error('Use --skip-stability to bypass this check.');
             return 1;
         }
 
@@ -81,22 +89,31 @@ final readonly class Benchmark
         $runner = new CategoryRunner($this->runs, $this->warmup);
         $category = $this->filter->category;
 
+        $projectCount = Iter\count($projects);
+        $projectIndex = 0;
+
         foreach ($projects as $project) {
+            $projectIndex++;
             $ws = Str\format('%s/%s', $workspaceDir, $project->value);
             $projectResultsDir = Str\format('%s/%s', $resultsDir, $project->value);
             Filesystem\create_directory($projectResultsDir);
 
-            Console::heading(Str\format('Benchmarking: %s', $project->getDisplayName()));
+            Output::section($project->getDisplayName(), Str\format('[%d/%d]', $projectIndex, $projectCount));
             $summary->writeProjectHeading($project);
 
-            $ctx = new ProjectContext($this->rootDir, $project, $ws, $cacheDir, $projectResultsDir);
+            $projectCtx = new ProjectContext($this->rootDir, $project, $ws, $cacheDir, $projectResultsDir);
+            $ctx = new RunContext($analyzers, $projectCtx, $summary, $results);
 
             if ($category === null || $category === BenchmarkCategory::Uncached) {
-                $runner->runUncached($analyzers, $ctx, $summary, $results);
+                $runner->runUncached($ctx);
             }
 
             if ($category === null || $category === BenchmarkCategory::Incremental) {
-                $runner->runIncremental($analyzers, $ctx, $summary, $results);
+                $runner->runIncremental($ctx);
+            }
+
+            if ($category === null || $category === BenchmarkCategory::Uncached) {
+                $runner->runMemory($ctx);
             }
         }
 
@@ -104,9 +121,9 @@ final readonly class Benchmark
         $results->exportMarkdown($resultsDir . '/report.md');
         $results->exportJson($resultsDir . '/report.json');
 
-        Console::info(Str\format('Results saved to: %s', $resultsDir));
-        Console::info(Str\format('Summary: %s', $summary->getPath()));
-        Console::heading('Benchmarks complete');
+        $elapsed = Spinner::formatDuration(DateTime\Timestamp::now()->since($overallStart)->getTotalSeconds());
+        Output::success(Str\format('Results saved to %s', $resultsDir));
+        Output::success(Str\format('Benchmarks complete (%s)', $elapsed));
 
         return 0;
     }

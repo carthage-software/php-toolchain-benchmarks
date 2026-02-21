@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace CarthageSoftware\StaticAnalyzersBenchmark\Benchmark;
 
-use CarthageSoftware\StaticAnalyzersBenchmark\Support\Console;
+use CarthageSoftware\StaticAnalyzersBenchmark\Support\Output;
+use CarthageSoftware\StaticAnalyzersBenchmark\Support\Spinner;
 use Psl\Async;
 use Psl\DateTime;
 use Psl\Math;
@@ -29,7 +30,7 @@ final readonly class SystemStability
         }
 
         if ($cpu > $threshold) {
-            Console::warn(Str\format('System CPU is at %d%%. Benchmarks may not reflect full tool performance.', $cpu));
+            Output::warn(Str\format('System CPU at %d%%', $cpu));
         }
     }
 
@@ -45,15 +46,7 @@ final readonly class SystemStability
      */
     public static function check(int $maxCpu = 25, int $margin = 5, int $samples = 5, int $interval = 2): bool
     {
-        Console::heading('System Stability Check');
-        Console::info(Str\format(
-            'Taking %d CPU samples (%ds apart), max %d%%, margin %d%%',
-            $samples,
-            $interval,
-            $maxCpu,
-            $margin,
-        ));
-        Console::blank();
+        $spinner = new Spinner('Checking system stability...', '  ');
 
         /** @var list<int> $readings */
         $readings = [];
@@ -61,55 +54,42 @@ final readonly class SystemStability
         for ($i = 1; $i <= $samples; $i++) {
             $cpu = self::getCpuUsage();
             if ($cpu === null) {
-                Console::error('Failed to read CPU usage');
+                $spinner->fail('Failed to read CPU usage');
                 return false;
             }
 
             $readings[] = $cpu;
-            Console::write(Str\format('  Sample %d/%d: %3d%% CPU', $i, $samples, $cpu));
+            $spinner->tick(Str\format('Checking system stability... (%d/%d, %d%% CPU)', $i, $samples, $cpu));
 
             if ($i < $samples) {
                 Async\sleep(DateTime\Duration::seconds($interval));
             }
         }
 
-        Console::blank();
-
         $min = Math\min($readings) ?? 0;
         $max = Math\max($readings) ?? 0;
         $spread = $max - $min;
 
-        // Check if any sample exceeds threshold
-        foreach ($readings as $reading) {
-            if ($reading <= $maxCpu) {
-                continue;
-            }
-
-            Console::error(Str\format('CPU usage too high: %d%% (threshold: %d%%)', $reading, $maxCpu));
-            Console::error('Close other applications and try again.');
+        $tooHigh = Math\max($readings) ?? 0;
+        if ($tooHigh > $maxCpu) {
+            $spinner->fail(Str\format('CPU too high: %d%% (threshold: %d%%)', $tooHigh, $maxCpu));
+            Output::error('Close other applications and try again.');
             return false;
         }
 
-        // Check spread
         if ($spread > $margin) {
-            Console::error(Str\format(
-                'CPU usage unstable: spread %d%% (min %d%%, max %d%%, allowed margin %d%%)',
+            $spinner->fail(Str\format(
+                'CPU unstable: spread %d%% (%d%%-%d%%, margin %d%%)',
                 $spread,
                 $min,
                 $max,
                 $margin,
             ));
-            Console::error('System load is fluctuating. Wait for background tasks to finish and try again.');
+            Output::error('System load is fluctuating. Wait for background tasks to finish.');
             return false;
         }
 
-        Console::success(Str\format(
-            'System stable: %d%%-%d%% CPU (spread: %d%%, within %d%% margin)',
-            $min,
-            $max,
-            $spread,
-            $margin,
-        ));
+        $spinner->succeed(Str\format('System stable: %d%%-%d%% CPU, spread %d%%', $min, $max, $spread));
 
         return true;
     }

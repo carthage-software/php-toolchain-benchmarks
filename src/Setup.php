@@ -7,7 +7,7 @@ namespace CarthageSoftware\StaticAnalyzersBenchmark;
 use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\Analyzer;
 use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\Config;
 use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\Project;
-use CarthageSoftware\StaticAnalyzersBenchmark\Support\Console;
+use CarthageSoftware\StaticAnalyzersBenchmark\Support\Output;
 use Psl\Async;
 use Psl\Filesystem;
 use Psl\Iter;
@@ -26,7 +26,7 @@ final readonly class Setup
         $workspaceDir = $rootDir . '/workspace';
         $cacheDir = $rootDir . '/cache';
 
-        Console::heading('PHP Static Analyzer Benchmarks - Setup');
+        Output::section('PHP Static Analyzer Benchmarks - Setup');
 
         if (!self::checkPrerequisites()) {
             return 1;
@@ -53,8 +53,8 @@ final readonly class Setup
             return 1;
         }
 
-        Console::heading('Setup complete');
-        Console::info('Run: bin/benchmark run');
+        Output::section('Setup complete');
+        Output::info('Run: bin/benchmark run');
 
         return 0;
     }
@@ -64,8 +64,8 @@ final readonly class Setup
         return Iter\all(['php', 'composer', 'hyperfine'], static function (string $cmd): bool {
             $found = self::commandExists($cmd);
             $found
-                ? Console::success(Str\format('%s found', $cmd))
-                : Console::error(Str\format('%s is not installed', $cmd));
+                ? Output::success(Str\format('%s found', $cmd))
+                : Output::error(Str\format('%s is not installed', $cmd));
 
             return $found;
         });
@@ -76,13 +76,13 @@ final readonly class Setup
      */
     private static function installDependencies(string $rootDir): bool
     {
-        Console::heading('Installing composer dependencies');
+        Output::section('Installing composer dependencies');
         try {
             Shell\execute('composer', ['install', '--no-interaction'], $rootDir);
-            Console::success('Composer dependencies installed');
+            Output::success('Composer dependencies installed');
             return true;
         } catch (Shell\Exception\FailedExecutionException $e) {
-            Console::error(Str\format('Composer install failed: %s', $e->getErrorOutput()));
+            Output::error(Str\format('Composer install failed: %s', $e->getErrorOutput()));
             return false;
         }
     }
@@ -94,7 +94,7 @@ final readonly class Setup
      */
     private static function setupProject(string $rootDir, Project $project, string $workspaceDir, string $cacheDir): int
     {
-        Console::heading(Str\format('Setting up project: %s', $project->getDisplayName()));
+        Output::section(Str\format('Setting up project: %s', $project->getDisplayName()));
 
         $ws = Str\format('%s/%s', $workspaceDir, $project->value);
 
@@ -102,16 +102,16 @@ final readonly class Setup
             return 1;
         }
 
-        Console::info('Running project setup...');
+        Output::info('Running project setup...');
         try {
             Shell\execute('sh', ['-c', $project->getSetupCommand()], $ws);
         } catch (Shell\Exception\FailedExecutionException $e) {
-            Console::error(Str\format('Project setup failed: %s', $e->getErrorOutput()));
+            Output::error(Str\format('Project setup failed: %s', $e->getErrorOutput()));
             return 1;
         }
 
         self::processConfigs($rootDir, $project, $ws, $cacheDir);
-        Console::success(Str\format('Project %s is ready', $project->getDisplayName()));
+        Output::success(Str\format('Project %s is ready', $project->getDisplayName()));
 
         return 0;
     }
@@ -142,7 +142,7 @@ final readonly class Setup
 
             $outputFile = Str\format('%s/%s', $configOutput, $analyzer->getConfigFilename());
             Config::processTemplate($templateFile, $outputFile, $ws, $analyzerCacheDir);
-            Console::success(Str\format('Processed %s for %s', $analyzer->getConfigFilename(), $project->value));
+            Output::success(Str\format('Processed %s for %s', $analyzer->getConfigFilename(), $project->value));
         }
     }
 
@@ -152,18 +152,18 @@ final readonly class Setup
     private static function cloneOrUpdateProject(Project $project, string $ws): bool
     {
         if (Filesystem\exists($ws . '/.git')) {
-            Console::info('Repository already cloned, updating...');
+            Output::info('Repository already cloned, updating...');
             try {
                 Shell\execute('git', ['fetch', 'origin'], $ws);
                 Shell\execute('git', ['checkout', $project->getRef()], $ws);
                 Shell\execute('git', ['pull', 'origin', $project->getRef()], $ws);
             } catch (Shell\Exception\FailedExecutionException) {
-                Console::warn('Git pull failed, continuing with existing checkout');
+                Output::warn('Git pull failed, continuing with existing checkout');
             }
             return true;
         }
 
-        Console::info(Str\format('Cloning %s (ref: %s)...', $project->getRepo(), $project->getRef()));
+        Output::info(Str\format('Cloning %s (ref: %s)...', $project->getRepo(), $project->getRef()));
         try {
             Shell\execute('git', [
                 'clone',
@@ -176,7 +176,7 @@ final readonly class Setup
             ]);
             return true;
         } catch (Shell\Exception\FailedExecutionException $e) {
-            Console::error(Str\format('Git clone failed: %s', $e->getErrorOutput()));
+            Output::error(Str\format('Git clone failed: %s', $e->getErrorOutput()));
             return false;
         }
     }

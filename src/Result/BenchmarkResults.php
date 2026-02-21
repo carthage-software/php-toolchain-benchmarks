@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace CarthageSoftware\StaticAnalyzersBenchmark\Result;
 
 use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\Project;
-use CarthageSoftware\StaticAnalyzersBenchmark\Support\Console;
+use CarthageSoftware\StaticAnalyzersBenchmark\Support\Output;
+use CarthageSoftware\StaticAnalyzersBenchmark\Support\Style;
 use CarthageSoftware\StaticAnalyzersBenchmark\Support\TableRenderer;
 use Psl\Dict;
 use Psl\File;
+use Psl\IO;
 use Psl\Json;
 use Psl\Str;
 use Psl\Vec;
@@ -58,18 +60,20 @@ final class BenchmarkResults
             return;
         }
 
-        Console::heading('Final Report');
+        IO\write_line('  %s', Str\repeat(Style::RULE_THICK, 46));
+        Output::blank();
+        Output::title('Final Report');
         $currentProject = '';
 
         foreach ($sections as $section) {
             if ($section['project'] !== $currentProject) {
-                Console::write(Str\format('── %s ──', Project::from($section['project'])->getDisplayName()));
-                Console::blank();
+                Output::write(Str\format('  ── %s ──', Project::from($section['project'])->getDisplayName()));
+                Output::blank();
                 $currentProject = $section['project'];
             }
 
-            Console::write(Str\format('  %s', $section['category']));
-            Console::write(TableRenderer::render(
+            Output::write(Str\format('  %s', $section['category']));
+            Output::write(TableRenderer::render(
                 ['Analyzer', 'Mean', '± StdDev', 'Min', 'Max', 'Memory', 'Rel'],
                 Vec\map($section['entries'], static fn(array $e): array => [
                     $e['analyzer'],
@@ -82,7 +86,7 @@ final class BenchmarkResults
                 ]),
                 '  ',
             ));
-            Console::blank();
+            Output::blank();
         }
     }
 

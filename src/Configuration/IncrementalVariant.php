@@ -16,10 +16,10 @@ enum IncrementalVariant: string
     public function getLabel(): string
     {
         return match ($this) {
-            self::NoChange => 'No change (cache hit)',
-            self::Touch => 'Touch (mtime only)',
-            self::Noop => 'No-op change',
-            self::Logic => 'Logic change',
+            self::NoChange => 'Cache hit',
+            self::Touch => 'Cache miss: mtime',
+            self::Noop => 'Cache miss: no-op',
+            self::Logic => 'Cache miss: logic',
         };
     }
 

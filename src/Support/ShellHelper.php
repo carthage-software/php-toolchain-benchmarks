@@ -7,7 +7,6 @@ namespace CarthageSoftware\StaticAnalyzersBenchmark\Support;
 use CarthageSoftware\StaticAnalyzersBenchmark\Result\HyperfineResult;
 use Psl\Filesystem;
 use Psl\Shell;
-use Psl\Str;
 
 /**
  * Shell execution utilities for benchmark runners.
@@ -27,8 +26,8 @@ final readonly class ShellHelper
     {
         try {
             Shell\execute('hyperfine', $args, '/tmp', error_output_behavior: Shell\ErrorOutputBehavior::Append);
-        } catch (Shell\Exception\FailedExecutionException $e) {
-            Console::warn(Str\format('Hyperfine exited with code %d', $e->getCode()));
+        } catch (Shell\Exception\FailedExecutionException) { // @mago-expect lint:no-empty-catch-clause
+            // Hyperfine failures are expected with --ignore-failure; results are in JSON.
         }
     }
 
