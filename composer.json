@@ -1,0 +1,24 @@
+{
+  "name": "carthage-software/static-analyzers-benchmarks",
+  "description": "Benchmark suite for PHP static analyzers",
+  "license": "MIT",
+  "require": {
+    "php": "~8.5.0",
+    "azjezz/psl": "^4.0"
+  },
+  "require-dev": {
+    "carthage-software/mago": "^1.9"
+  },
+  "autoload": {
+    "psr-4": {
+      "CarthageSoftware\\StaticAnalyzersBenchmark\\": "src/"
+    }
+  },
+  "config": {
+    "allow-plugins": {
+      "carthage-software/mago": true
+    },
+    "platform-check": false,
+    "sort-packages": true
+  }
+}

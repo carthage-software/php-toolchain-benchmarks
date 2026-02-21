@@ -1,0 +1,9 @@
+parameters:
+    level: 0
+    phpVersion: 80000
+    paths:
+        - {{WORKSPACE}}/src
+        - {{WORKSPACE}}/tests
+    excludePaths:
+        - {{WORKSPACE}}/src/js
+    tmpDir: {{CACHE_DIR}}

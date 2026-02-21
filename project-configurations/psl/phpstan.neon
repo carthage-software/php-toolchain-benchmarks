@@ -1,0 +1,7 @@
+parameters:
+    level: 9
+    phpVersion: 80300
+    paths:
+        - {{WORKSPACE}}/src
+        - {{WORKSPACE}}/examples
+    tmpDir: {{CACHE_DIR}}

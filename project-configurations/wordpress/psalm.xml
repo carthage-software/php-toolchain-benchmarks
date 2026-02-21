@@ -1,0 +1,19 @@
+<?xml version="1.0" ?>
+<psalm
+    errorLevel="4"
+    phpVersion="8.0"
+    resolveFromConfigFile="true"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="https://getpsalm.org/schema/config"
+    xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
+    cacheDirectory="{{CACHE_DIR}}"
+    autoloader="{{WORKSPACE}}/vendor/autoload.php"
+>
+    <projectFiles>
+        <directory name="{{WORKSPACE}}/src" />
+        <directory name="{{WORKSPACE}}/tests" />
+        <ignoreFiles>
+            <directory name="{{WORKSPACE}}/src/js" />
+        </ignoreFiles>
+    </projectFiles>
+</psalm>

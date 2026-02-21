@@ -1,0 +1,10 @@
+php-version = "8.3"
+
+[source]
+paths = ["src", "examples"]
+includes = ["vendor/"]
+excludes = []
+
+[analyzer]
+plugins = ["php-standard-library"]
+strict-list-index-checks = true
