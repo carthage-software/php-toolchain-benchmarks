@@ -70,7 +70,7 @@ enum Analyzer: string
 
         return match ($this) {
             self::Mago => Str\format(
-                '%s --workspace %s --config %s/mago.toml analyze',
+                '%s --workspace %s --config %s/mago.toml analyze --reporting-format=emacs',
                 self::resolveMagoBinary($rootDir),
                 $projectDir,
                 $configDir,
