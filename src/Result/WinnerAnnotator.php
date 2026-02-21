@@ -24,6 +24,8 @@ final readonly class WinnerAnnotator
         $memValues = Vec\filter_nulls(Vec\map($entries, static fn(array $e): ?float => $e['raw_memory']));
         $minMem = $memValues !== [] ? Math\min($memValues) : null;
 
+        $entries = Vec\sort($entries, static fn(array $a, array $b): int => $a['mean'] <=> $b['mean']);
+
         return Vec\map($entries, static function (array $e) use ($minMean, $minMem): array {
             $rel = $minMean !== null && $minMean > 0.0 ? $e['mean'] / $minMean : 1.0;
             $e['raw_rel'] = Math\round($rel, 1);
