@@ -73,7 +73,7 @@ final readonly class CategoryRunner
             $cacheDir = $project->analyzerCacheDir($a);
             ShellHelper::exec($a->getClearCacheCommand($cacheDir));
 
-            return $a->getUncachedCommand($project->rootDir, $project->workspace, $project->configDir, $cacheDir);
+            return $a->getUncachedCommand($project->tools, $project->workspace, $project->configDir, $cacheDir);
         });
 
         Vec\map($memoryResults, static fn(MemoryResult $m) => $ctx->results->addMemory(
@@ -123,6 +123,8 @@ final readonly class CategoryRunner
             (string) $this->warmup,
             '--style',
             'none',
+            '--shell',
+            'none',
             '--ignore-failure',
             '--export-json',
             $jsonFile,
@@ -135,9 +137,9 @@ final readonly class CategoryRunner
             $args[] = '--command-name';
             $args[] = $analyzer->getDisplayName();
             $args[] = '--prepare';
-            $args[] = $analyzer->getClearCacheCommand($cacheDir);
+            $args[] = self::shellWrap($analyzer->getClearCacheCommand($cacheDir));
             $args[] = $analyzer->getUncachedCommand(
-                $ctx->project->rootDir,
+                $ctx->project->tools,
                 $ctx->project->workspace,
                 $ctx->project->configDir,
                 $cacheDir,
@@ -165,6 +167,8 @@ final readonly class CategoryRunner
             '0',
             '--style',
             'none',
+            '--shell',
+            'none',
             '--ignore-failure',
             '--export-json',
             $jsonFile,
@@ -175,7 +179,7 @@ final readonly class CategoryRunner
         foreach ($ctx->analyzers as $analyzer) {
             $cacheDir = $ctx->project->analyzerCacheDir($analyzer);
             $cmd = $analyzer->getCommand(
-                $ctx->project->rootDir,
+                $ctx->project->tools,
                 $ctx->project->workspace,
                 $ctx->project->configDir,
                 $cacheDir,
@@ -184,7 +188,7 @@ final readonly class CategoryRunner
             $args[] = $analyzer->getDisplayName();
             $args[] = '--prepare';
 
-            $args[] = $variant === IncrementalVariant::NoChange
+            $prepare = $variant === IncrementalVariant::NoChange
                 ? Str\format('%s >/dev/null 2>&1 || true', $cmd)
                 : Str\format(
                     'git -C %s checkout -- . 2>/dev/null; %s >/dev/null 2>&1 || true; %s',
@@ -192,11 +196,24 @@ final readonly class CategoryRunner
                     $cmd,
                     $modifyCmd,
                 );
+            $args[] = self::shellWrap($prepare);
 
             $args[] = $cmd;
         }
 
         return ['args' => $args, 'jsonFile' => $jsonFile, 'mdFile' => $mdFile];
+    }
+
+    /**
+     * Wrap a command string for sh execution under --shell=none.
+     *
+     * @param non-empty-string $command
+     *
+     * @return non-empty-string
+     */
+    private static function shellWrap(string $command): string
+    {
+        return Str\format('sh -c %s', \escapeshellarg($command));
     }
 
     /**

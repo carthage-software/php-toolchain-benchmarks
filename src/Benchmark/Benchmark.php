@@ -7,6 +7,7 @@ namespace CarthageSoftware\StaticAnalyzersBenchmark\Benchmark;
 use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\Analyzer;
 use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\BenchmarkCategory;
 use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\Project;
+use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\ToolPaths;
 use CarthageSoftware\StaticAnalyzersBenchmark\Result\BenchmarkResults;
 use CarthageSoftware\StaticAnalyzersBenchmark\Result\Summary;
 use CarthageSoftware\StaticAnalyzersBenchmark\Support\Output;
@@ -19,12 +20,11 @@ use Psl\Vec;
 final readonly class Benchmark
 {
     /**
-     * @param non-empty-string $rootDir
-     * @param int<1, max>      $runs
-     * @param int<0, max>      $warmup
+     * @param int<1, max> $runs
+     * @param int<0, max> $warmup
      */
     public function __construct(
-        private string $rootDir,
+        private ToolPaths $tools,
         private int $runs = 10,
         private int $warmup = 2,
         private bool $skipStability = false,
@@ -34,10 +34,11 @@ final readonly class Benchmark
     public function execute(): int
     {
         $overallStart = DateTime\Timestamp::now();
-        $workspaceDir = $this->rootDir . '/workspace';
-        $cacheDir = $this->rootDir . '/cache';
+        $rootDir = $this->tools->rootDir;
+        $workspaceDir = $rootDir . '/workspace';
+        $cacheDir = $rootDir . '/cache';
 
-        $analyzers = Discovery::analyzers($this->rootDir, $this->filter->analyzer);
+        $analyzers = Discovery::analyzers($rootDir, $this->filter->analyzer);
         if ($analyzers === []) {
             Output::error('No analyzers available. Run: bin/benchmark setup');
             return 1;
@@ -50,7 +51,7 @@ final readonly class Benchmark
         }
 
         $timestamp = DateTime\Timestamp::now()->format('yyyyMMdd-HHmmss');
-        $resultsDir = Str\format('%s/results/%s', $this->rootDir, $timestamp);
+        $resultsDir = Str\format('%s/results/%s', $rootDir, $timestamp);
         Filesystem\create_directory($resultsDir);
 
         Output::blank();
@@ -69,6 +70,7 @@ final readonly class Benchmark
         Output::configLine('Results', $resultsDir);
         Output::blank();
 
+        EnvironmentCheck::warn($this->tools);
         SystemStability::warn();
 
         if ($this->skipStability) {
@@ -100,7 +102,7 @@ final readonly class Benchmark
             Output::section($project->getDisplayName(), Str\format('[%d/%d]', $projectIndex, $projectCount));
             $summary->writeProjectHeading($project);
 
-            $projectCtx = new ProjectContext($this->rootDir, $project, $ws, $cacheDir, $projectResultsDir);
+            $projectCtx = new ProjectContext($this->tools, $project, $ws, $cacheDir, $projectResultsDir);
             $ctx = new RunContext($analyzers, $projectCtx, $summary, $results);
 
             if ($category === null || $category === BenchmarkCategory::Uncached) {

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace CarthageSoftware\StaticAnalyzersBenchmark\Configuration;
 
-use Psl\File;
 use Psl\Filesystem;
 use Psl\Str;
 
@@ -57,36 +56,38 @@ enum Analyzer: string
     /**
      * Build the default command (used for cached / warm runs).
      *
-     * @param non-empty-string $rootDir      Benchmark suite root
      * @param non-empty-string $projectDir   Cloned project workspace
      * @param non-empty-string $configDir    .bench-configs directory
      * @param non-empty-string $cacheDir     Cache directory for this analyzer+project
      *
      * @return non-empty-string
      */
-    public function getCommand(string $rootDir, string $projectDir, string $configDir, string $cacheDir): string
+    public function getCommand(ToolPaths $tools, string $projectDir, string $configDir, string $cacheDir): string
     {
-        $bin = Str\format('%s/tools/%s/vendor/bin/%s', $rootDir, $this->value, $this->value);
+        $bin = $tools->analyzerBin($this);
 
         return match ($this) {
             self::Mago => Str\format(
                 '%s --workspace %s --config %s/mago.toml analyze --reporting-format=emacs',
-                self::resolveMagoBinary($rootDir),
+                $tools->magoBinary,
                 $projectDir,
                 $configDir,
             ),
             self::PHPStan => Str\format(
-                'php -dopcache.enable=1 -dopcache.enable_cli=1 %s analyse --configuration=%s/phpstan.neon --memory-limit=-1',
+                '%s -dopcache.enable=1 -dopcache.enable_cli=1 %s analyse --configuration=%s/phpstan.neon --memory-limit=-1',
+                $tools->phpBinary,
                 $bin,
                 $configDir,
             ),
             self::Psalm => Str\format(
-                'php -dopcache.enable=1 -dopcache.enable_cli=1 %s --config=%s/psalm.xml --show-info',
+                '%s -dopcache.enable=1 -dopcache.enable_cli=1 %s --config=%s/psalm.xml --show-info',
+                $tools->phpBinary,
                 $bin,
                 $configDir,
             ),
             self::Phan => Str\format(
-                'php -dopcache.enable=1 -dopcache.enable_cli=1 %s --config-file %s/phan.php --memory-limit 4G',
+                '%s -dopcache.enable=1 -dopcache.enable_cli=1 %s --config-file %s/phan.php --memory-limit 4G',
+                $tools->phpBinary,
                 $bin,
                 $configDir,
             ),
@@ -96,24 +97,28 @@ enum Analyzer: string
     /**
      * Build the command for uncached (cold start) runs.
      *
-     * @param non-empty-string $rootDir
      * @param non-empty-string $projectDir
      * @param non-empty-string $configDir
      * @param non-empty-string $cacheDir
      *
      * @return non-empty-string
      */
-    public function getUncachedCommand(string $rootDir, string $projectDir, string $configDir, string $cacheDir): string
-    {
-        $bin = Str\format('%s/tools/%s/vendor/bin/%s', $rootDir, $this->value, $this->value);
+    public function getUncachedCommand(
+        ToolPaths $tools,
+        string $projectDir,
+        string $configDir,
+        string $cacheDir,
+    ): string {
+        $bin = $tools->analyzerBin($this);
 
         return match ($this) {
             self::Psalm => Str\format(
-                'php -dopcache.enable=1 -dopcache.enable_cli=1 %s --config=%s/psalm.xml --show-info --no-cache',
+                '%s -dopcache.enable=1 -dopcache.enable_cli=1 %s --config=%s/psalm.xml --show-info --no-cache',
+                $tools->phpBinary,
                 $bin,
                 $configDir,
             ),
-            default => $this->getCommand($rootDir, $projectDir, $configDir, $cacheDir),
+            default => $this->getCommand($tools, $projectDir, $configDir, $cacheDir),
         };
     }
 
@@ -130,27 +135,5 @@ enum Analyzer: string
             self::Mago => 'true',
             self::PHPStan, self::Psalm, self::Phan => Str\format('rm -rf %s/*', $cacheDir),
         };
-    }
-
-    /**
-     * Resolve the native mago binary path via the .platform file.
-     *
-     * Falls back to the Composer proxy if the .platform file is missing.
-     *
-     * @param non-empty-string $rootDir
-     *
-     * @return non-empty-string
-     */
-    private static function resolveMagoBinary(string $rootDir): string
-    {
-        $toolDir = Str\format('%s/tools/mago', $rootDir);
-        $platformFile = Str\format('%s/vendor/carthage-software/mago/composer/bin/.platform', $toolDir);
-        if (!Filesystem\is_file($platformFile)) {
-            return Str\format('%s/vendor/bin/mago', $toolDir);
-        }
-
-        $relativePath = Str\trim(File\read($platformFile));
-
-        return Str\format('%s/vendor/carthage-software/mago/composer/bin/%s', $toolDir, $relativePath);
     }
 }

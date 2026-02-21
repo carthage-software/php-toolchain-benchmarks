@@ -9,6 +9,7 @@ use CarthageSoftware\StaticAnalyzersBenchmark\Benchmark\BenchmarkFilter;
 use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\Analyzer;
 use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\BenchmarkCategory;
 use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\Project;
+use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\ToolPaths;
 use CarthageSoftware\StaticAnalyzersBenchmark\Support\Output;
 use Psl\Iter;
 use Psl\Math;
@@ -56,6 +57,10 @@ final class Application
         $filterProject = null;
         $filterAnalyzer = null;
         $filterCategory = null;
+        /** @var null|non-empty-string $phpBinary */
+        $phpBinary = null;
+        /** @var null|non-empty-string $magoBinary */
+        $magoBinary = null;
 
         $i = 0;
         while ($i < Iter\count($args)) {
@@ -66,6 +71,8 @@ final class Application
                 '--project' => $filterProject = Project::tryFrom($args[++$i] ?? ''),
                 '--analyzer' => $filterAnalyzer = Analyzer::tryFrom($args[++$i] ?? ''),
                 '--category' => $filterCategory = BenchmarkCategory::tryFrom($args[++$i] ?? ''),
+                '--php-binary' => $phpBinary = ($args[++$i] ?? '') !== '' ? $args[$i] : null,
+                '--mago-binary' => $magoBinary = ($args[++$i] ?? '') !== '' ? $args[$i] : null,
                 '--skip-stability' => $skipStability = true,
                 default => null,
             };
@@ -74,7 +81,7 @@ final class Application
         }
 
         $benchmark = new Benchmark(
-            rootDir: $rootDir,
+            tools: ToolPaths::resolve($rootDir, $phpBinary, $magoBinary),
             runs: Type\positive_int()->assert($runs),
             warmup: Type\uint()->assert($warmup),
             skipStability: $skipStability,
@@ -98,6 +105,8 @@ final class Application
         Output::write('  --project NAME     Only benchmark: psl, wordpress');
         Output::write('  --analyzer NAME    Only benchmark: mago, phpstan, psalm, phan');
         Output::write('  --category NAME    Only run: uncached, incremental');
+        Output::write('  --php-binary PATH  PHP binary to use (default: current PHP)');
+        Output::write('  --mago-binary PATH Mago binary to use (default: installed)');
         Output::write('  --skip-stability   Skip CPU stability check');
 
         return 0;

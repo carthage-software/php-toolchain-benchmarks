@@ -6,6 +6,7 @@ namespace CarthageSoftware\StaticAnalyzersBenchmark\Benchmark;
 
 use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\Analyzer;
 use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\Project;
+use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\ToolPaths;
 use Psl\Str;
 
 /**
@@ -17,13 +18,12 @@ final readonly class ProjectContext
     public string $configDir;
 
     /**
-     * @param non-empty-string $rootDir
      * @param non-empty-string $workspace  Path to the cloned project.
      * @param non-empty-string $cacheDir   Base cache directory.
      * @param non-empty-string $resultsDir Project-specific results directory.
      */
     public function __construct(
-        public string $rootDir,
+        public ToolPaths $tools,
         public Project $project,
         public string $workspace,
         public string $cacheDir,
