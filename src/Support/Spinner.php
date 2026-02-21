@@ -65,21 +65,6 @@ final class Spinner
         $this->finalize(Style::RED, Style::CROSS, $message);
     }
 
-    /**
-     * Format a duration in seconds to a human-readable string.
-     */
-    public static function formatDuration(float $seconds): string
-    {
-        $s = (int) $seconds;
-        if ($s < 60) {
-            return Str\format('%ds', $s);
-        }
-
-        $m = (int) Math\div($s, 60);
-
-        return Str\format('%dm %ds', $m, $s % 60);
-    }
-
     private function finalize(string $color, string $symbol, string $message): void
     {
         IO\write_line(
@@ -116,6 +101,14 @@ final class Spinner
 
     private function elapsed(): string
     {
-        return self::formatDuration(DateTime\Timestamp::now()->since($this->startTime)->getTotalSeconds());
+        $duration = DateTime\Timestamp::now()->since($this->startTime);
+        $s = (int) $duration->getTotalSeconds();
+        if ($s < 60) {
+            return Str\format('%ds', $s);
+        }
+
+        $m = (int) Math\div($s, 60);
+
+        return Str\format('%dm %ds', $m, $s % 60);
     }
 }

@@ -6,6 +6,7 @@ namespace CarthageSoftware\StaticAnalyzersBenchmark\Result;
 
 use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\IncrementalVariant;
 use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\Project;
+use Psl\DateTime;
 use Psl\File;
 use Psl\Filesystem;
 use Psl\Str;
@@ -33,7 +34,7 @@ final class Summary
 
     public function writeHeader(int $runs, int $warmup): void
     {
-        $content = Str\format("# Benchmark Results - %s\n\n", \date('Y-m-d H:i:s'));
+        $content = Str\format("# Benchmark Results - %s\n\n", DateTime\Timestamp::now()->format('yyyy-MM-dd HH:mm:ss'));
         $content .= Str\format("Configuration: %d runs, %d warmup\n\n", $runs, $warmup);
 
         File\write($this->path, $content);

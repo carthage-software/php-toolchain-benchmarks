@@ -8,6 +8,7 @@ use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\Project;
 use CarthageSoftware\StaticAnalyzersBenchmark\Support\Output;
 use CarthageSoftware\StaticAnalyzersBenchmark\Support\Style;
 use CarthageSoftware\StaticAnalyzersBenchmark\Support\TableRenderer;
+use Psl\DateTime;
 use Psl\Dict;
 use Psl\File;
 use Psl\IO;
@@ -100,7 +101,10 @@ final class BenchmarkResults
             return;
         }
 
-        $content = Str\format("# Benchmark Report\n\nGenerated: %s\n\n", \date('Y-m-d H:i:s'));
+        $content = Str\format(
+            "# Benchmark Report\n\nGenerated: %s\n\n",
+            DateTime\Timestamp::now()->format('yyyy-MM-dd HH:mm:ss'),
+        );
         $currentProject = '';
 
         foreach ($sections as $section) {
@@ -152,7 +156,10 @@ final class BenchmarkResults
             ]);
         }
 
-        File\write($path, Json\encode(['generated' => \date('Y-m-d H:i:s'), 'projects' => $projects], true));
+        File\write($path, Json\encode([
+            'generated' => DateTime\Timestamp::now()->format('yyyy-MM-dd HH:mm:ss'),
+            'projects' => $projects,
+        ], true));
     }
 
     /**

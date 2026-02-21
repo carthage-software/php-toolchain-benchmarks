@@ -10,7 +10,6 @@ use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\Project;
 use CarthageSoftware\StaticAnalyzersBenchmark\Result\BenchmarkResults;
 use CarthageSoftware\StaticAnalyzersBenchmark\Result\Summary;
 use CarthageSoftware\StaticAnalyzersBenchmark\Support\Output;
-use CarthageSoftware\StaticAnalyzersBenchmark\Support\Spinner;
 use Psl\DateTime;
 use Psl\Filesystem;
 use Psl\Iter;
@@ -50,7 +49,7 @@ final readonly class Benchmark
             return 1;
         }
 
-        $timestamp = \date('Ymd-His');
+        $timestamp = DateTime\Timestamp::now()->format('yyyyMMdd-HHmmss');
         $resultsDir = Str\format('%s/results/%s', $this->rootDir, $timestamp);
         Filesystem\create_directory($resultsDir);
 
@@ -121,7 +120,7 @@ final readonly class Benchmark
         $results->exportMarkdown($resultsDir . '/report.md');
         $results->exportJson($resultsDir . '/report.json');
 
-        $elapsed = Spinner::formatDuration(DateTime\Timestamp::now()->since($overallStart)->getTotalSeconds());
+        $elapsed = (string) DateTime\Timestamp::now()->since($overallStart);
         Output::success(Str\format('Results saved to %s', $resultsDir));
         Output::success(Str\format('Benchmarks complete (%s)', $elapsed));
 
