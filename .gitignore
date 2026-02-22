@@ -4,3 +4,4 @@
 /cache/
 /results/
 /composer.lock
+.DS_Store
