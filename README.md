@@ -21,6 +21,7 @@ Peak memory is measured separately at the end using process tree RSS polling dur
 | ------------------------------------------------------------------- | ----- | ------------------- |
 | [azjezz/psl](https://github.com/azjezz/psl)                         | Small | Well-typed library  |
 | [wordpress-develop](https://github.com/WordPress/wordpress-develop) | Large | Untyped application |
+| [magento/magento2](https://github.com/magento/magento2)             | Massive | E-commerce platform |
 
 ## Prerequisites
 
@@ -56,7 +57,7 @@ open results/index.html
 | ------------------- | ------- | ------------------------------------------------------ |
 | `--runs N`          | 10      | Number of benchmark runs                               |
 | `--warmup N`        | 2       | Number of warmup runs                                  |
-| `--project NAME`    | all     | Filter by project: `psl`, `wordpress`                  |
+| `--project NAME`    | all     | Filter by project: `psl`, `wordpress`, `magento`       |
 | `--analyzer NAME`   | all     | Filter by analyzer: `mago`, `phpstan`, `psalm`, `phan` |
 | `--category NAME`   | all     | Filter by category: `uncached`, `cached`               |
 | `--php-binary PATH` | current | PHP binary for analyzer commands                       |

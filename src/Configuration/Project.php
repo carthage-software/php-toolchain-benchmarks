@@ -8,12 +8,14 @@ enum Project: string
 {
     case Psl = 'psl';
     case WordPress = 'wordpress';
+    case Magento = 'magento';
 
     public function getDisplayName(): string
     {
         return match ($this) {
             self::Psl => 'azjezz/psl',
             self::WordPress => 'wordpress-develop',
+            self::Magento => 'magento/magento2',
         };
     }
 
@@ -25,6 +27,7 @@ enum Project: string
         return match ($this) {
             self::Psl => 'https://github.com/azjezz/psl.git',
             self::WordPress => 'https://github.com/WordPress/wordpress-develop.git',
+            self::Magento => 'https://github.com/magento/magento2.git',
         };
     }
 
@@ -36,6 +39,7 @@ enum Project: string
         return match ($this) {
             self::Psl => 'next',
             self::WordPress => 'trunk',
+            self::Magento => '2.4-develop',
         };
     }
 

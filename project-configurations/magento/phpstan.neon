@@ -1,0 +1,10 @@
+parameters:
+    level: 9
+    phpVersion: 80300
+    paths:
+        - {{WORKSPACE}}/app
+        - {{WORKSPACE}}/dev
+        - {{WORKSPACE}}/phpserver
+        - {{WORKSPACE}}/setup
+        - {{WORKSPACE}}/pub
+    tmpDir: {{CACHE_DIR}}

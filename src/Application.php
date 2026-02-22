@@ -101,7 +101,7 @@ final class Application
         Output::write('Options:');
         Output::write('  --runs N           Number of benchmark runs (default: 10)');
         Output::write('  --warmup N         Number of warmup runs (default: 2)');
-        Output::write('  --project NAME     Only benchmark: psl, wordpress');
+        Output::write('  --project NAME     Only benchmark: psl, wordpress, magento');
         Output::write('  --analyzer NAME    Only benchmark: mago, phpstan, psalm, phan');
         Output::write('  --category NAME    Only run: uncached, cached');
         Output::write('  --php-binary PATH  PHP binary to use (default: current PHP)');
