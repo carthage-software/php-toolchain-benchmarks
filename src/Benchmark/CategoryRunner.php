@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace CarthageSoftware\StaticAnalyzersBenchmark\Benchmark;
 
-use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\Analyzer;
-use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\IncrementalVariant;
+use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\AnalyzerTool;
 use CarthageSoftware\StaticAnalyzersBenchmark\Result\MemoryResult;
 use CarthageSoftware\StaticAnalyzersBenchmark\Support\Output;
 use CarthageSoftware\StaticAnalyzersBenchmark\Support\ShellHelper;
@@ -13,7 +12,6 @@ use CarthageSoftware\StaticAnalyzersBenchmark\Support\Spinner;
 use Closure;
 use Psl\Async;
 use Psl\DateTime;
-use Psl\Filesystem;
 use Psl\Iter;
 use Psl\Str;
 use Psl\Vec;
@@ -40,27 +38,32 @@ final readonly class CategoryRunner
     }
 
     /**
-     * Run all incremental benchmark variants.
+     * Run the cached benchmark type (only analyzers that support caching).
      */
-    public function runIncremental(RunContext $ctx): void
+    public function runCached(RunContext $ctx): void
     {
-        $incFile = $ctx->project->project->getIncrementalFile($ctx->project->workspace);
-        if (!Filesystem\exists($incFile)) {
-            Output::warn(Str\format('Incremental file not found: %s, skipping', $incFile));
+        $cachingAnalyzers = Vec\filter($ctx->analyzers, static fn(AnalyzerTool $a): bool => $a->supportsCaching());
+        if ($cachingAnalyzers === []) {
             return;
         }
 
-        $ctx->summary->writeIncrementalHeader($incFile);
-
-        foreach (IncrementalVariant::cases() as $variant) {
-            $built = $this->buildVariantArgs($ctx, $variant, $incFile);
-            $this->runType($variant->getLabel(), $built, $ctx);
-            $ctx->summary->writeIncrementalVariant($variant, $built['mdFile']);
-
-            if ($variant !== IncrementalVariant::NoChange) {
-                ShellHelper::exec(Str\format('git -C %s checkout -- .', $ctx->project->workspace));
+        // Clear caches and warm them in one pass before measuring.
+        Output::withSpinner('Cached — Warming caches...', static function () use ($ctx, $cachingAnalyzers): void {
+            foreach ($cachingAnalyzers as $analyzer) {
+                $cacheDir = $ctx->project->analyzerCacheDir($analyzer);
+                ShellHelper::exec($analyzer->getClearCacheCommand($cacheDir));
+                ShellHelper::exec(Str\format('%s >/dev/null 2>&1 || true', $analyzer->getCommand(
+                    $ctx->project->tools,
+                    $ctx->project->workspace,
+                    $ctx->project->configDir($analyzer),
+                    $cacheDir,
+                )));
             }
-        }
+        });
+
+        $built = $this->buildCachedArgs($ctx, $cachingAnalyzers);
+        $this->runType('Cached', $built, $ctx);
+        $ctx->summary->writeBenchmarkType('Cached', $built['mdFile']);
     }
 
     /**
@@ -69,11 +72,11 @@ final readonly class CategoryRunner
     public function runMemory(RunContext $ctx): void
     {
         $project = $ctx->project;
-        $memoryResults = self::measureMemory($ctx->analyzers, static function (Analyzer $a) use ($project): string {
+        $memoryResults = self::measureMemory($ctx->analyzers, static function (AnalyzerTool $a) use ($project): string {
             $cacheDir = $project->analyzerCacheDir($a);
             ShellHelper::exec($a->getClearCacheCommand($cacheDir));
 
-            return $a->getUncachedCommand($project->tools, $project->workspace, $project->configDir, $cacheDir);
+            return $a->getUncachedCommand($project->tools, $project->workspace, $project->configDir($a), $cacheDir);
         });
 
         Vec\map($memoryResults, static fn(MemoryResult $m) => $ctx->results->addMemory(
@@ -141,7 +144,7 @@ final readonly class CategoryRunner
             $args[] = $analyzer->getUncachedCommand(
                 $ctx->project->tools,
                 $ctx->project->workspace,
-                $ctx->project->configDir,
+                $ctx->project->configDir($analyzer),
                 $cacheDir,
             );
         }
@@ -150,15 +153,14 @@ final readonly class CategoryRunner
     }
 
     /**
-     * @param non-empty-string $incFile
+     * @param list<AnalyzerTool> $cachingAnalyzers
      *
      * @return array{args: list<string>, jsonFile: non-empty-string, mdFile: non-empty-string}
      */
-    private function buildVariantArgs(RunContext $ctx, IncrementalVariant $variant, string $incFile): array
+    private function buildCachedArgs(RunContext $ctx, array $cachingAnalyzers): array
     {
-        $modifyCmd = $variant->getModifyCommand($incFile);
-        $jsonFile = Str\format('%s/incremental-%s.json', $ctx->project->resultsDir, $variant->value);
-        $mdFile = Str\format('%s/incremental-%s.md', $ctx->project->resultsDir, $variant->value);
+        $jsonFile = $ctx->project->resultsDir . '/cached.json';
+        $mdFile = $ctx->project->resultsDir . '/cached.md';
 
         $args = [
             '--runs',
@@ -176,29 +178,16 @@ final readonly class CategoryRunner
             $mdFile,
         ];
 
-        foreach ($ctx->analyzers as $analyzer) {
+        foreach ($cachingAnalyzers as $analyzer) {
             $cacheDir = $ctx->project->analyzerCacheDir($analyzer);
-            $cmd = $analyzer->getCommand(
-                $ctx->project->tools,
-                $ctx->project->workspace,
-                $ctx->project->configDir,
-                $cacheDir,
-            );
             $args[] = '--command-name';
             $args[] = $analyzer->getDisplayName();
-            $args[] = '--prepare';
-
-            $prepare = $variant === IncrementalVariant::NoChange
-                ? Str\format('%s >/dev/null 2>&1 || true', $cmd)
-                : Str\format(
-                    'git -C %s checkout -- . 2>/dev/null; %s >/dev/null 2>&1 || true; %s',
-                    $ctx->project->workspace,
-                    $cmd,
-                    $modifyCmd,
-                );
-            $args[] = self::shellWrap($prepare);
-
-            $args[] = $cmd;
+            $args[] = $analyzer->getCommand(
+                $ctx->project->tools,
+                $ctx->project->workspace,
+                $ctx->project->configDir($analyzer),
+                $cacheDir,
+            );
         }
 
         return ['args' => $args, 'jsonFile' => $jsonFile, 'mdFile' => $mdFile];
@@ -219,8 +208,8 @@ final readonly class CategoryRunner
     /**
      * Measure peak memory for each analyzer with a live spinner.
      *
-     * @param list<Analyzer> $analyzers
-     * @param Closure(Analyzer): non-empty-string $getCommand
+     * @param list<AnalyzerTool> $analyzers
+     * @param Closure(AnalyzerTool): non-empty-string $getCommand
      *
      * @return list<MemoryResult>
      */

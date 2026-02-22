@@ -16,24 +16,18 @@ final readonly class ToolPaths
     /**
      * @param non-empty-string $rootDir
      * @param non-empty-string $phpBinary
-     * @param non-empty-string $magoBinary
      */
     public function __construct(
         public string $rootDir,
         public string $phpBinary,
-        public string $magoBinary,
     ) {}
 
     /**
      * @param non-empty-string $rootDir
      */
-    public static function resolve(string $rootDir, ?string $phpBinary = null, ?string $magoBinary = null): self
+    public static function resolve(string $rootDir, ?string $phpBinary = null): self
     {
-        return new self(
-            $rootDir,
-            $phpBinary !== null && $phpBinary !== '' ? $phpBinary : \PHP_BINARY,
-            $magoBinary !== null && $magoBinary !== '' ? $magoBinary : self::defaultMagoBinary($rootDir),
-        );
+        return new self($rootDir, $phpBinary !== null && $phpBinary !== '' ? $phpBinary : \PHP_BINARY);
     }
 
     /**
@@ -41,23 +35,21 @@ final readonly class ToolPaths
      *
      * @return non-empty-string
      */
-    public function analyzerBin(Analyzer $analyzer): string
+    public function analyzerBin(AnalyzerTool $tool): string
     {
-        return Str\format('%s/tools/%s/vendor/bin/%s', $this->rootDir, $analyzer->value, $analyzer->value);
+        return Str\format('%s/tools/%s/vendor/bin/%s', $this->rootDir, $tool->slug, $tool->analyzer->value);
     }
 
     /**
-     * Resolve the native mago binary path via the .platform file.
+     * Resolve the native mago binary for a specific versioned slug.
      *
-     * Falls back to the Composer proxy if the .platform file is missing.
-     *
-     * @param non-empty-string $rootDir
+     * @param non-empty-string $slug e.g. "mago-1.9.1"
      *
      * @return non-empty-string
      */
-    private static function defaultMagoBinary(string $rootDir): string
+    public function magoBinaryFor(string $slug): string
     {
-        $toolDir = Str\format('%s/tools/mago', $rootDir);
+        $toolDir = Str\format('%s/tools/%s', $this->rootDir, $slug);
         $platformFile = Str\format('%s/vendor/carthage-software/mago/composer/bin/.platform', $toolDir);
         if (!Filesystem\is_file($platformFile)) {
             return Str\format('%s/vendor/bin/mago', $toolDir);

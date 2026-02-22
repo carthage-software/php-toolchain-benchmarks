@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace CarthageSoftware\StaticAnalyzersBenchmark\Configuration;
 
-use Psl\Filesystem;
 use Psl\Str;
 
 enum Analyzer: string
@@ -13,14 +12,6 @@ enum Analyzer: string
     case PHPStan = 'phpstan';
     case Psalm = 'psalm';
     case Phan = 'phan';
-
-    /**
-     * @return non-empty-string
-     */
-    public function getDisplayName(): string
-    {
-        return $this->name;
-    }
 
     public function supportsCaching(): bool
     {
@@ -31,24 +22,18 @@ enum Analyzer: string
     }
 
     /**
-     * @param non-empty-string $rootDir
-     */
-    public function isAvailable(string $rootDir): bool
-    {
-        return Filesystem\is_file(Str\format('%s/tools/%s/vendor/bin/%s', $rootDir, $this->value, $this->value));
-    }
-
-    /**
-     * Returns the config filename used in project-configurations/<name>/ and .bench-configs/.
+     * Returns the config filename, version-aware for Psalm.
+     *
+     * @param non-empty-string $version
      *
      * @return non-empty-string
      */
-    public function getConfigFilename(): string
+    public function getConfigFilename(string $version): string
     {
         return match ($this) {
             self::Mago => 'mago.toml',
             self::PHPStan => 'phpstan.neon',
-            self::Psalm => 'psalm.xml',
+            self::Psalm => Str\format('psalm-v%s.xml', Str\before($version, '.') ?? $version),
             self::Phan => 'phan.php',
         };
     }
@@ -56,40 +41,50 @@ enum Analyzer: string
     /**
      * Build the default command (used for cached / warm runs).
      *
-     * @param non-empty-string $projectDir   Cloned project workspace
-     * @param non-empty-string $configDir    .bench-configs directory
-     * @param non-empty-string $cacheDir     Cache directory for this analyzer+project
+     * @param non-empty-string $projectDir
+     * @param non-empty-string $configDir
+     * @param non-empty-string $cacheDir
      *
      * @return non-empty-string
      */
-    public function getCommand(ToolPaths $tools, string $projectDir, string $configDir, string $cacheDir): string
-    {
-        $bin = $tools->analyzerBin($this);
+    public function getCommand(
+        ToolPaths $tools,
+        AnalyzerTool $tool,
+        string $projectDir,
+        string $configDir,
+        string $cacheDir,
+    ): string {
+        $bin = $tools->analyzerBin($tool);
+        $config = $tool->getConfigFilename();
 
         return match ($this) {
             self::Mago => Str\format(
-                '%s --workspace %s --config %s/mago.toml analyze --reporting-format=emacs',
-                $tools->magoBinary,
+                '%s --workspace %s --config %s/%s analyze --reporting-format=emacs',
+                $tools->magoBinaryFor($tool->slug),
                 $projectDir,
                 $configDir,
+                $config,
             ),
             self::PHPStan => Str\format(
-                '%s -dopcache.enable=1 -dopcache.enable_cli=1 %s analyse --configuration=%s/phpstan.neon --memory-limit=-1',
+                '%s -dopcache.enable=1 -dopcache.enable_cli=1 %s analyse --configuration=%s/%s --memory-limit=-1',
                 $tools->phpBinary,
                 $bin,
                 $configDir,
+                $config,
             ),
             self::Psalm => Str\format(
-                '%s -dopcache.enable=1 -dopcache.enable_cli=1 %s --config=%s/psalm.xml --show-info',
+                '%s -dopcache.enable=1 -dopcache.enable_cli=1 %s --config=%s/%s --show-info',
                 $tools->phpBinary,
                 $bin,
                 $configDir,
+                $config,
             ),
             self::Phan => Str\format(
-                '%s -dopcache.enable=1 -dopcache.enable_cli=1 %s --config-file %s/phan.php --memory-limit 4G',
+                '%s -dopcache.enable=1 -dopcache.enable_cli=1 %s --config-file %s/%s --memory-limit 4G',
                 $tools->phpBinary,
                 $bin,
                 $configDir,
+                $config,
             ),
         };
     }
@@ -105,26 +100,27 @@ enum Analyzer: string
      */
     public function getUncachedCommand(
         ToolPaths $tools,
+        AnalyzerTool $tool,
         string $projectDir,
         string $configDir,
         string $cacheDir,
     ): string {
-        $bin = $tools->analyzerBin($this);
+        $bin = $tools->analyzerBin($tool);
+        $config = $tool->getConfigFilename();
 
         return match ($this) {
             self::Psalm => Str\format(
-                '%s -dopcache.enable=1 -dopcache.enable_cli=1 %s --config=%s/psalm.xml --show-info --no-cache',
+                '%s -dopcache.enable=1 -dopcache.enable_cli=1 %s --config=%s/%s --show-info --no-cache',
                 $tools->phpBinary,
                 $bin,
                 $configDir,
+                $config,
             ),
-            default => $this->getCommand($tools, $projectDir, $configDir, $cacheDir),
+            default => $this->getCommand($tools, $tool, $projectDir, $configDir, $cacheDir),
         };
     }
 
     /**
-     * Returns the shell command to clear this analyzer's cache.
-     *
      * @param non-empty-string $cacheDir
      *
      * @return non-empty-string

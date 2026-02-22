@@ -7,5 +7,5 @@ namespace CarthageSoftware\StaticAnalyzersBenchmark\Configuration;
 enum BenchmarkCategory: string
 {
     case Uncached = 'uncached';
-    case Incremental = 'incremental';
+    case Cached = 'cached';
 }

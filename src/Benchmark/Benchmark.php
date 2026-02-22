@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace CarthageSoftware\StaticAnalyzersBenchmark\Benchmark;
 
-use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\Analyzer;
+use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\AnalyzerTool;
 use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\BenchmarkCategory;
 use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\Project;
 use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\ToolPaths;
@@ -60,7 +60,7 @@ final readonly class Benchmark
         Output::configLine('Runs', (string) $this->runs);
         Output::configLine('Warmup', (string) $this->warmup);
         Output::configLine('Analyzers', Str\join(
-            Vec\map($analyzers, static fn(Analyzer $a): string => $a->getDisplayName()),
+            Vec\map($analyzers, static fn(AnalyzerTool $a): string => $a->getDisplayName()),
             ', ',
         ));
         Output::configLine('Projects', Str\join(
@@ -109,8 +109,8 @@ final readonly class Benchmark
                 $runner->runUncached($ctx);
             }
 
-            if ($category === null || $category === BenchmarkCategory::Incremental) {
-                $runner->runIncremental($ctx);
+            if ($category === null || $category === BenchmarkCategory::Cached) {
+                $runner->runCached($ctx);
             }
 
             if ($category === null || $category === BenchmarkCategory::Uncached) {

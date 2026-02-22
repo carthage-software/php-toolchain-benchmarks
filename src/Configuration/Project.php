@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace CarthageSoftware\StaticAnalyzersBenchmark\Configuration;
 
-use Psl\Str;
-
 enum Project: string
 {
     case Psl = 'psl';
@@ -49,20 +47,5 @@ enum Project: string
     public function getSetupCommand(): string
     {
         return 'composer update --no-interaction --quiet --ignore-platform-reqs';
-    }
-
-    /**
-     * Returns the path to the PHP file used for incremental benchmark tests.
-     *
-     * @param non-empty-string $workspaceDir The cloned project directory.
-     *
-     * @return non-empty-string
-     */
-    public function getIncrementalFile(string $workspaceDir): string
-    {
-        return match ($this) {
-            self::Psl => Str\format('%s/src/Psl/Str/contains.php', $workspaceDir),
-            self::WordPress => Str\format('%s/src/wp-includes/functions.php', $workspaceDir),
-        };
     }
 }

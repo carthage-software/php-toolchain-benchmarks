@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace CarthageSoftware\StaticAnalyzersBenchmark\Benchmark;
 
 use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\Analyzer;
+use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\AnalyzerTool;
 use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\Project;
 use CarthageSoftware\StaticAnalyzersBenchmark\Support\Output;
+use CarthageSoftware\StaticAnalyzersBenchmark\ToolInstaller;
 use Psl\Filesystem;
 use Psl\Str;
 
@@ -15,26 +17,26 @@ final readonly class Discovery
     /**
      * @param non-empty-string $rootDir
      *
-     * @return list<Analyzer>
+     * @return list<AnalyzerTool>
      */
     public static function analyzers(string $rootDir, ?Analyzer $filter): array
     {
         $analyzers = [];
-        foreach (Analyzer::cases() as $analyzer) {
-            if ($filter !== null && $analyzer !== $filter) {
+        foreach (ToolInstaller::allTools() as $tool) {
+            if ($filter !== null && $tool->analyzer !== $filter) {
                 continue;
             }
 
-            if (!$analyzer->isAvailable($rootDir)) {
-                Output::warn(Str\format('%s is not available, skipping', $analyzer->getDisplayName()));
+            if (!$tool->isAvailable($rootDir)) {
+                Output::warn(Str\format('%s is not available, skipping', $tool->getDisplayName()));
                 continue;
             }
 
-            $analyzers[] = $analyzer;
+            $analyzers[] = $tool;
             Output::success(Str\format(
                 'Found analyzer: %s (cache: %s)',
-                $analyzer->getDisplayName(),
-                $analyzer->supportsCaching() ? 'yes' : 'no',
+                $tool->getDisplayName(),
+                $tool->supportsCaching() ? 'yes' : 'no',
             ));
         }
 

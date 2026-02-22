@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace CarthageSoftware\StaticAnalyzersBenchmark\Benchmark;
 
-use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\Analyzer;
+use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\AnalyzerTool;
 use CarthageSoftware\StaticAnalyzersBenchmark\Result\BenchmarkResults;
 use CarthageSoftware\StaticAnalyzersBenchmark\Result\Summary;
 
@@ -14,7 +14,7 @@ use CarthageSoftware\StaticAnalyzersBenchmark\Result\Summary;
 final readonly class RunContext
 {
     /**
-     * @param list<Analyzer> $analyzers
+     * @param list<AnalyzerTool> $analyzers
      */
     public function __construct(
         public array $analyzers,

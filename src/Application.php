@@ -59,8 +59,6 @@ final class Application
         $filterCategory = null;
         /** @var null|non-empty-string $phpBinary */
         $phpBinary = null;
-        /** @var null|non-empty-string $magoBinary */
-        $magoBinary = null;
 
         $i = 0;
         while ($i < Iter\count($args)) {
@@ -72,7 +70,6 @@ final class Application
                 '--analyzer' => $filterAnalyzer = Analyzer::tryFrom($args[++$i] ?? ''),
                 '--category' => $filterCategory = BenchmarkCategory::tryFrom($args[++$i] ?? ''),
                 '--php-binary' => $phpBinary = ($args[++$i] ?? '') !== '' ? $args[$i] : null,
-                '--mago-binary' => $magoBinary = ($args[++$i] ?? '') !== '' ? $args[$i] : null,
                 '--skip-stability' => $skipStability = true,
                 default => null,
             };
@@ -81,7 +78,7 @@ final class Application
         }
 
         $benchmark = new Benchmark(
-            tools: ToolPaths::resolve($rootDir, $phpBinary, $magoBinary),
+            tools: ToolPaths::resolve($rootDir, $phpBinary),
             runs: Type\positive_int()->assert($runs),
             warmup: Type\uint()->assert($warmup),
             skipStability: $skipStability,
@@ -104,9 +101,8 @@ final class Application
         Output::write('  --warmup N         Number of warmup runs (default: 2)');
         Output::write('  --project NAME     Only benchmark: psl, wordpress');
         Output::write('  --analyzer NAME    Only benchmark: mago, phpstan, psalm, phan');
-        Output::write('  --category NAME    Only run: uncached, incremental');
+        Output::write('  --category NAME    Only run: uncached, cached');
         Output::write('  --php-binary PATH  PHP binary to use (default: current PHP)');
-        Output::write('  --mago-binary PATH Mago binary to use (default: installed)');
         Output::write('  --skip-stability   Skip CPU stability check');
 
         return 0;

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace CarthageSoftware\StaticAnalyzersBenchmark\Benchmark;
 
-use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\Analyzer;
+use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\AnalyzerTool;
 use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\Project;
 use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\ToolPaths;
 use Psl\Str;
@@ -14,9 +14,6 @@ use Psl\Str;
  */
 final readonly class ProjectContext
 {
-    /** @var non-empty-string */
-    public string $configDir;
-
     /**
      * @param non-empty-string $workspace  Path to the cloned project.
      * @param non-empty-string $cacheDir   Base cache directory.
@@ -28,15 +25,21 @@ final readonly class ProjectContext
         public string $workspace,
         public string $cacheDir,
         public string $resultsDir,
-    ) {
-        $this->configDir = $this->workspace . '/.bench-configs';
+    ) {}
+
+    /**
+     * @return non-empty-string
+     */
+    public function configDir(AnalyzerTool $tool): string
+    {
+        return Str\format('%s/.bench-configs/%s', $this->workspace, $tool->slug);
     }
 
     /**
      * @return non-empty-string
      */
-    public function analyzerCacheDir(Analyzer $analyzer): string
+    public function analyzerCacheDir(AnalyzerTool $tool): string
     {
-        return Str\format('%s/%s/%s', $this->cacheDir, $this->project->value, $analyzer->value);
+        return Str\format('%s/%s/%s', $this->cacheDir, $this->project->value, $tool->slug);
     }
 }

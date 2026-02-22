@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace CarthageSoftware\StaticAnalyzersBenchmark\Result;
 
-use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\IncrementalVariant;
 use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\Project;
 use Psl\DateTime;
 use Psl\File;
@@ -74,30 +73,6 @@ final class Summary
         }
 
         $content .= "\n";
-        $this->append($content);
-    }
-
-    /**
-     * @param non-empty-string $incFile
-     */
-    public function writeIncrementalHeader(string $incFile): void
-    {
-        $basename = Filesystem\get_basename($incFile);
-        $this->append(Str\format("### Incremental (Cache Invalidation)\n\nTarget file: `%s`\n\n", $basename));
-    }
-
-    /**
-     * @param non-empty-string $mdFile
-     */
-    public function writeIncrementalVariant(IncrementalVariant $variant, string $mdFile): void
-    {
-        $content = Str\format("#### %s\n\n", $variant->getLabel());
-
-        if (Filesystem\exists($mdFile)) {
-            $content .= File\read($mdFile);
-            $content .= "\n";
-        }
-
         $this->append($content);
     }
 

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace CarthageSoftware\StaticAnalyzersBenchmark;
 
-use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\Analyzer;
 use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\Config;
 use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\Project;
 use CarthageSoftware\StaticAnalyzersBenchmark\Support\Output;
@@ -123,26 +122,21 @@ final readonly class Setup
      */
     private static function processConfigs(string $rootDir, Project $project, string $ws, string $cacheDir): void
     {
-        $configOutput = $ws . '/.bench-configs';
-        Filesystem\create_directory($configOutput);
-
-        foreach (Analyzer::cases() as $analyzer) {
-            $analyzerCacheDir = Str\format('%s/%s/%s', $cacheDir, $project->value, $analyzer->value);
+        foreach (ToolInstaller::allTools() as $tool) {
+            $analyzerCacheDir = Str\format('%s/%s/%s', $cacheDir, $project->value, $tool->slug);
             Filesystem\create_directory($analyzerCacheDir);
 
-            $templateFile = Str\format(
-                '%s/project-configurations/%s/%s',
-                $rootDir,
-                $project->value,
-                $analyzer->getConfigFilename(),
-            );
+            $configFilename = $tool->getConfigFilename();
+            $templateFile = Str\format('%s/project-configurations/%s/%s', $rootDir, $project->value, $configFilename);
             if (!Filesystem\exists($templateFile)) {
                 continue;
             }
 
-            $outputFile = Str\format('%s/%s', $configOutput, $analyzer->getConfigFilename());
+            $configOutput = Str\format('%s/.bench-configs/%s', $ws, $tool->slug);
+            Filesystem\create_directory($configOutput);
+            $outputFile = Str\format('%s/%s', $configOutput, $configFilename);
             Config::processTemplate($templateFile, $outputFile, $ws, $analyzerCacheDir);
-            Output::success(Str\format('Processed %s for %s', $analyzer->getConfigFilename(), $project->value));
+            Output::success(Str\format('Processed %s for %s (%s)', $configFilename, $project->value, $tool->slug));
         }
     }
 
