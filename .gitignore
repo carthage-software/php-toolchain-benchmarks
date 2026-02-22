@@ -2,6 +2,5 @@
 /vendor/
 /tools/
 /cache/
-/results/
 /composer.lock
 .DS_Store
