@@ -38,6 +38,7 @@ final class Application
         return match ($command) {
             'setup' => Setup::run($rootDir),
             'run' => self::runBenchmark($rootDir, $rest),
+            'build' => Site\SiteBuilder::run($rootDir),
             'help', '--help', '-h' => self::printUsage(),
             default => self::unknownCommand($command),
         };
@@ -95,6 +96,7 @@ final class Application
         Output::write('Usage:');
         Output::write('  bin/benchmark setup                Setup: clone projects, install deps');
         Output::write('  bin/benchmark run [OPTIONS]        Run benchmarks');
+        Output::write('  bin/benchmark build                Build HTML results page');
         Output::blank();
         Output::write('Options:');
         Output::write('  --runs N           Number of benchmark runs (default: 10)');

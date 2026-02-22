@@ -44,6 +44,10 @@ composer install
 # Filter by project, analyzer, or category
 ./bin/benchmark run --project psl --runs 5
 ./bin/benchmark run --analyzer mago --category uncached --runs 3 --warmup 1
+
+# Build HTML results dashboard (reads all results/)
+./bin/benchmark build
+open results/index.html
 ```
 
 ### CLI Options
