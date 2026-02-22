@@ -26,6 +26,7 @@ final readonly class ToolInstaller
      * @var list<array{non-empty-string, non-empty-string, non-empty-string}>
      */
     private const array TOOLS = [
+        ['mago',    'carthage-software/mago', '1.10.0'],
         ['mago',    'carthage-software/mago', '1.9.1'],
         ['mago',    'carthage-software/mago', '1.8.0'],
         ['mago',    'carthage-software/mago', '1.7.0'],
@@ -119,7 +120,7 @@ final readonly class ToolInstaller
         try {
             Output::withSpinner(
                 Str\format('Installing %s', $label),
-                static function () use ($toolDir, $name): void {
+                static function () use ($toolDir, $name, $version): void {
                     $args = ['install', '--no-interaction'];
                     if ($name === 'phan') {
                         $args[] = '--ignore-platform-req=ext-tokenizer';
@@ -128,7 +129,11 @@ final readonly class ToolInstaller
                     Shell\execute('composer', $args, $toolDir);
 
                     if ($name === 'mago') {
-                        Shell\execute('composer', ['mago:install-binary', '--no-interaction'], $toolDir);
+                        if (version_compare($version, '1.10.0', '>=')) {
+                            Shell\execute($toolDir . '/vendor/bin/mago', ['--version'], $toolDir);
+                        } else {
+                            Shell\execute('composer', ['mago:install-binary', '--no-interaction'], $toolDir);
+                        }
                     }
                 },
                 '  ',

@@ -50,13 +50,14 @@ final readonly class ToolPaths
     public function magoBinaryFor(string $slug): string
     {
         $toolDir = Str\format('%s/tools/%s', $this->rootDir, $slug);
-        $platformFile = Str\format('%s/vendor/carthage-software/mago/composer/bin/.platform', $toolDir);
-        if (!Filesystem\is_file($platformFile)) {
-            return Str\format('%s/vendor/bin/mago', $toolDir);
-        }
+        $version = Str\after($slug, 'mago-') ?? $slug;
 
-        $relativePath = Str\trim(File\read($platformFile));
-
-        return Str\format('%s/vendor/carthage-software/mago/composer/bin/%s', $toolDir, $relativePath);
+        // TODO(azjezz): hardcoded platform, improve this later.
+        return Str\format(
+            '%s/vendor/carthage-software/mago/composer/bin/%s/mago-%s-aarch64-apple-darwin/mago',
+            $toolDir,
+            $version,
+            $version,
+        );
     }
 }
