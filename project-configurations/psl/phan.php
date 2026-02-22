@@ -17,4 +17,17 @@ return [
     'null_casts_as_any_type' => false,
     'scalar_implicit_cast' => false,
     'processes' => 10,
+    'plugins' => [
+        'AlwaysReturnPlugin',
+        'DollarDollarPlugin',
+        'DuplicateArrayKeyPlugin',
+        'DuplicateExpressionPlugin',
+        'PregRegexCheckerPlugin',
+        'PrintfCheckerPlugin',
+        'SleepCheckerPlugin',
+        'UnreachableCodePlugin',
+        'UseReturnValuePlugin',
+        'EmptyStatementListPlugin',
+        'LoopVariableReusePlugin',
+    ],
 ];
