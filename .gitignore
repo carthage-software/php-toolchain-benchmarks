@@ -3,5 +3,5 @@
 /tools/
 /cache/
 /composer.lock
-/results/index.html # Ignore the generated HTML report
+/results/index.html
 .DS_Store
