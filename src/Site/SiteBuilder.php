@@ -163,12 +163,23 @@ final readonly class SiteBuilder
             <head>
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1">
-            <title>PHP Static Analyzer Benchmarks</title>
+            <title>PHP Static Analyzer Benchmarks — Mago, PHPStan, Psalm, Phan</title>
+            <meta name="description" content="Performance benchmarks comparing PHP static analyzers: Mago, PHPStan, Psalm, and Phan. Execution time and memory usage across real-world projects.">
+            <meta name="keywords" content="PHP, static analysis, benchmark, Mago, PHPStan, Psalm, Phan, performance, comparison">
+            <meta name="robots" content="index, follow">
+            <link rel="canonical" href="https://carthage-software.github.io/static-analyzers-benchmarks/">
+            <meta property="og:type" content="website">
+            <meta property="og:title" content="PHP Static Analyzer Benchmarks">
+            <meta property="og:description" content="Performance benchmarks comparing PHP static analyzers: Mago, PHPStan, Psalm, and Phan. Execution time and memory usage across real-world projects.">
+            <meta property="og:url" content="https://carthage-software.github.io/static-analyzers-benchmarks/">
+            <meta name="twitter:card" content="summary">
+            <meta name="twitter:title" content="PHP Static Analyzer Benchmarks">
+            <meta name="twitter:description" content="Performance benchmarks comparing PHP static analyzers: Mago, PHPStan, Psalm, and Phan.">
             <style>{$css}</style>
             </head>
             <body>
             <h1>PHP Static Analyzer Benchmarks</h1>
-            <p class="meta">Latest: {$generated} &middot; {$runCount} run(s)</p>
+            <p class="meta">Latest: {$generated} &middot; {$runCount} run(s) &middot; <a href="https://github.com/carthage-software/static-analyzers-benchmarks">Source</a></p>
             <nav>
             <label>Project <select id="project-select">{$projectOptions}</select></label>
             <label>Category <select id="category-select">{$categoryOptions}</select></label>
@@ -210,6 +221,7 @@ final readonly class SiteBuilder
             h1{font-size:16px;font-weight:bold;border-bottom:1px solid #111;padding-bottom:4px;margin-bottom:4px}
             h2{font-size:14px;font-weight:bold;margin:20px 0 8px;border-bottom:1px solid #ddd;padding-bottom:2px}
             .meta{color:#666;font-size:12px;margin-bottom:12px}
+            .meta a{color:#444;text-decoration:underline}
             nav{margin:0 0 16px;display:flex;gap:12px}
             nav label{font-size:12px;color:#666}
             select{font-family:inherit;font-size:12px;padding:2px 4px;border:1px solid #999;background:#fff}
