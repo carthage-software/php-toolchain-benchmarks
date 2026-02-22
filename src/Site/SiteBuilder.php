@@ -130,28 +130,10 @@ final readonly class SiteBuilder
 
         $latestRun = $runs[Iter\count($runs) - 1];
         $projects = Vec\keys($latestRun['projects']);
-        /** @var list<string> $categories */
-        $categories = [];
-        foreach ($latestRun['projects'] as $cats) {
-            foreach (Vec\keys($cats) as $cat) {
-                if (Iter\contains($categories, $cat)) {
-                    continue;
-                }
-
-                $categories[] = $cat;
-            }
-        }
-
         $projectOptions = Str\join(Vec\map($projects, static fn(string $p): string => Str\format(
             '<option value="%s">%s</option>',
             $p,
             $p,
-        )), '');
-
-        $categoryOptions = Str\join(Vec\map($categories, static fn(string $c): string => Str\format(
-            '<option value="%s">%s</option>',
-            $c,
-            $c,
         )), '');
 
         $runCount = (string) Iter\count($runs);
@@ -180,33 +162,25 @@ final readonly class SiteBuilder
             <body>
             <h1>PHP Static Analyzer Benchmarks</h1>
             <p class="meta">Latest: {$generated} &middot; {$runCount} run(s) &middot; <a href="https://github.com/carthage-software/static-analyzers-benchmarks">Source</a></p>
+            <section>
+            <h2>Methodology</h2>
+            <p>All analyzers are run on the same machine, during the same session, under identical conditions. Every analyzer is configured at its <strong>strictest settings</strong> to ensure maximum analysis work. Execution time is measured using <a href="https://github.com/sharkdp/hyperfine">hyperfine</a> with multiple runs and warmup iterations. Peak memory usage is calculated by polling RSS across the entire process tree (including child processes) during an uncached run. Results are sorted by mean execution time.</p>
+            </section>
             <nav>
             <label>Project <select id="project-select">{$projectOptions}</select></label>
-            <label>Category <select id="category-select">{$categoryOptions}</select></label>
             </nav>
+            <div id="categories-content"></div>
             <section>
-            <h2>Latest Run</h2>
-            <div id="overview-content"></div>
-            </section>
-            <section>
-            <h2>Version Comparison</h2>
-            <div id="version-charts"></div>
+            <h2>Peak Memory (Uncached)</h2>
+            <div id="memory-content"></div>
             </section>
             <section>
             <h2>Run-over-Run Diff</h2>
             <div id="run-diff"></div>
             </section>
             <section>
-            <h2>Peak Memory (Latest Uncached)</h2>
-            <div id="memory-content"></div>
-            </section>
-            <section>
             <h2>All Runs</h2>
             <div id="details-content"></div>
-            </section>
-            <section>
-            <h2>Methodology</h2>
-            <p>All analyzers are run on the same machine, during the same session, under identical conditions. Execution time is measured using <a href="https://github.com/sharkdp/hyperfine">hyperfine</a> with multiple runs and warmup iterations. Peak memory usage is calculated by polling RSS across the entire process tree (including child processes) during an uncached run. Results are sorted by mean execution time.</p>
             </section>
             <script>{$js}</script>
             </body>
@@ -271,22 +245,18 @@ final readonly class SiteBuilder
             "use strict";
             var DATA={$jsData};
             var projSel=document.getElementById("project-select");
-            var catSel=document.getElementById("category-select");
             function curProj(){return projSel.value}
-            function curCat(){return catSel.value}
             function readParams(){
                 var p=new URLSearchParams(window.location.search);
                 if(p.get("project")){for(var i=0;i<projSel.options.length;i++){if(projSel.options[i].value===p.get("project")){projSel.value=p.get("project");break}}}
-                if(p.get("category")){for(var i=0;i<catSel.options.length;i++){if(catSel.options[i].value===p.get("category")){catSel.value=p.get("category");break}}}
             }
             function writeParams(){
                 var p=new URLSearchParams();
-                p.set("project",curProj());p.set("category",curCat());
+                p.set("project",curProj());
                 history.replaceState(null,"","?"+p.toString());
             }
             readParams();
             projSel.addEventListener("change",function(){writeParams();render()});
-            catSel.addEventListener("change",function(){writeParams();render()});
 
             function fmt(v){return v<10?v.toFixed(3):v<100?v.toFixed(2):v.toFixed(1)}
 
@@ -294,10 +264,13 @@ final readonly class SiteBuilder
                 return((run.projects[proj]||{})[cat])||[];
             }
 
-            function renderOverview(){
-                var run=DATA[DATA.length-1];
-                var entries=getEntries(run,curProj(),curCat());
-                if(!entries.length){document.getElementById("overview-content").innerHTML='<p class="muted">No data.</p>';return}
+            function getCats(run,proj){
+                var cats=Object.keys(run.projects[proj]||{});
+                cats.sort(function(a,b){return a==="Uncached"?-1:b==="Uncached"?1:a.localeCompare(b)});
+                return cats;
+            }
+
+            function renderOverviewTable(entries){
                 var h='<table><tr><th>Analyzer</th><th>Mean</th><th>&plusmn; StdDev</th><th>Min</th><th>Max</th><th>Memory</th><th>Relative</th></tr>';
                 for(var i=0;i<entries.length;i++){
                     var e=entries[i];
@@ -309,11 +282,10 @@ final readonly class SiteBuilder
                     h+='<td>'+fmt(e.min)+'s</td>';
                     h+='<td>'+fmt(e.max)+'s</td>';
                     h+='<td>'+(e.memory_mb!==null?e.memory_mb.toFixed(1)+' MB':'-')+'</td>';
-                    h+='<td>'+(w?'1.0x':'x'+e.relative.toFixed(1))+'</td>';
+                    h+='<td>'+(w?'&#x1F680; 1.0x':'x'+e.relative.toFixed(1))+'</td>';
                     h+='</tr>';
                 }
-                h+='</table>';
-                document.getElementById("overview-content").innerHTML=h;
+                return h+'</table>';
             }
 
             function parseTool(analyzer){
@@ -322,11 +294,7 @@ final readonly class SiteBuilder
                 return{tool:m[1],version:m[2]};
             }
 
-            function renderVersionCharts(){
-                var run=DATA[DATA.length-1];
-                var entries=getEntries(run,curProj(),curCat());
-                if(!entries.length){document.getElementById("version-charts").innerHTML='<p class="muted">No data.</p>';return}
-
+            function renderVersionBars(entries){
                 var tools={};
                 for(var i=0;i<entries.length;i++){
                     var p=parseTool(entries[i].analyzer);
@@ -359,19 +327,17 @@ final readonly class SiteBuilder
                     }
                     h+='</div>';
                 }
-
-                if(!h){h='<p class="muted">No multi-version tools for this combination.</p>'}
-                document.getElementById("version-charts").innerHTML=h;
+                return h;
             }
 
-            function renderRunDiff(){
-                if(DATA.length<2){document.getElementById("run-diff").innerHTML='<p class="muted">Need at least 2 runs to show diff.</p>';return}
+            function renderRunDiffTable(cat){
+                if(DATA.length<2){return''}
                 var latest=DATA[DATA.length-1];
                 var prev=DATA[DATA.length-2];
-                var proj=curProj(),cat=curCat();
+                var proj=curProj();
                 var cur=getEntries(latest,proj,cat);
                 var old=getEntries(prev,proj,cat);
-                if(!cur.length||!old.length){document.getElementById("run-diff").innerHTML='<p class="muted">No comparable data.</p>';return}
+                if(!cur.length||!old.length){return''}
 
                 var oldMap={};
                 for(var i=0;i<old.length;i++){oldMap[old[i].analyzer]=old[i]}
@@ -385,8 +351,7 @@ final readonly class SiteBuilder
                     var pct=((delta/o.mean)*100);
                     rows.push({analyzer:c.analyzer,prev:o.mean,curr:c.mean,delta:delta,pct:pct});
                 }
-
-                if(!rows.length){document.getElementById("run-diff").innerHTML='<p class="muted">No matching analyzers between runs.</p>';return}
+                if(!rows.length){return''}
 
                 var h='<p class="muted">Comparing: '+latest.generated+' vs '+prev.generated+'</p>';
                 h+='<table><tr><th>Analyzer</th><th>Previous</th><th>Current</th><th>Delta</th><th>Change</th></tr>';
@@ -402,7 +367,26 @@ final readonly class SiteBuilder
                     h+='</tr>';
                 }
                 h+='</table>';
-                document.getElementById("run-diff").innerHTML=h;
+                return h;
+            }
+
+            function renderCategories(){
+                var run=DATA[DATA.length-1];
+                var proj=curProj();
+                var cats=getCats(run,proj);
+                var h='';
+                for(var ci=0;ci<cats.length;ci++){
+                    var cat=cats[ci];
+                    var entries=getEntries(run,proj,cat);
+                    if(!entries.length){continue}
+                    h+='<section><h2>'+cat+'</h2>';
+                    h+=renderOverviewTable(entries);
+                    var bars=renderVersionBars(entries);
+                    if(bars){h+='<details><summary>Version Comparison</summary>'+bars+'</details>'}
+                    h+='</section>';
+                }
+                if(!h){h='<p class="muted">No data for this project.</p>'}
+                document.getElementById("categories-content").innerHTML=h;
             }
 
             function renderMemory(){
@@ -418,7 +402,7 @@ final readonly class SiteBuilder
                     var w=e.memory_mb===minMem;
                     h+='<tr'+(w?' class="winner"':'')+'><td>'+e.analyzer+'</td>';
                     h+='<td>'+e.memory_mb.toFixed(1)+'</td>';
-                    h+='<td>'+(w?'1.0x':'x'+rel)+'</td></tr>';
+                    h+='<td>'+(w?'&#x1F389; 1.0x':'x'+rel)+'</td></tr>';
                 }
                 h+='</table>';
                 document.getElementById("memory-content").innerHTML=h;
@@ -458,7 +442,21 @@ final readonly class SiteBuilder
                 document.getElementById("details-content").innerHTML=h;
             }
 
-            function render(){renderOverview();renderVersionCharts();renderRunDiff();renderMemory();renderDetails()}
+            function renderRunDiff(){
+                if(DATA.length<2){document.getElementById("run-diff").innerHTML='<p class="muted">Need at least 2 runs to show diff.</p>';return}
+                var run=DATA[DATA.length-1];
+                var proj=curProj();
+                var cats=getCats(run,proj);
+                var h='';
+                for(var ci=0;ci<cats.length;ci++){
+                    var d=renderRunDiffTable(cats[ci]);
+                    if(d){h+='<div class="sub-heading">'+cats[ci]+'</div>'+d}
+                }
+                if(!h){h='<p class="muted">No comparable data between runs.</p>'}
+                document.getElementById("run-diff").innerHTML=h;
+            }
+
+            function render(){renderCategories();renderMemory();renderRunDiff();renderDetails()}
             render();writeParams();
             })();
             JS;

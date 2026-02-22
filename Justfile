@@ -21,3 +21,7 @@ setup:
 # Run the benchmarks. This will execute all benchmark tests and report the results.
 benchmark:
     bin/benchmark run
+
+# Build the benchmark webpage. This will compile the benchmark results into a web-friendly format for easy viewing and sharing.
+build:
+    bin/benchmark build
