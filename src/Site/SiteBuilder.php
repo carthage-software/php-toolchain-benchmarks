@@ -204,6 +204,10 @@ final readonly class SiteBuilder
             <h2>All Runs</h2>
             <div id="details-content"></div>
             </section>
+            <section>
+            <h2>Methodology</h2>
+            <p>All analyzers are run on the same machine, during the same session, under identical conditions. Execution time is measured using <a href="https://github.com/sharkdp/hyperfine">hyperfine</a> with multiple runs and warmup iterations. Peak memory usage is calculated by polling RSS across the entire process tree (including child processes) during an uncached run. Results are sorted by mean execution time.</p>
+            </section>
             <script>{$js}</script>
             </body>
             </html>
@@ -247,6 +251,9 @@ final readonly class SiteBuilder
             .muted{color:#999;font-size:12px}
             .sub-heading{font-size:12px;font-weight:bold;margin:8px 0 4px;color:#444}
             section{margin-bottom:24px}
+            section p{margin:4px 0;line-height:1.6}
+            section a{color:#444;text-decoration:underline}
+            code{background:#f5f5f5;padding:1px 4px;border:1px solid #ddd;font-size:12px}
             CSS;
     }
 
