@@ -274,8 +274,19 @@ final readonly class SiteBuilder
             var catSel=document.getElementById("category-select");
             function curProj(){return projSel.value}
             function curCat(){return catSel.value}
-            projSel.addEventListener("change",render);
-            catSel.addEventListener("change",render);
+            function readParams(){
+                var p=new URLSearchParams(window.location.search);
+                if(p.get("project")){for(var i=0;i<projSel.options.length;i++){if(projSel.options[i].value===p.get("project")){projSel.value=p.get("project");break}}}
+                if(p.get("category")){for(var i=0;i<catSel.options.length;i++){if(catSel.options[i].value===p.get("category")){catSel.value=p.get("category");break}}}
+            }
+            function writeParams(){
+                var p=new URLSearchParams();
+                p.set("project",curProj());p.set("category",curCat());
+                history.replaceState(null,"","?"+p.toString());
+            }
+            readParams();
+            projSel.addEventListener("change",function(){writeParams();render()});
+            catSel.addEventListener("change",function(){writeParams();render()});
 
             function fmt(v){return v<10?v.toFixed(3):v<100?v.toFixed(2):v.toFixed(1)}
 
@@ -448,7 +459,7 @@ final readonly class SiteBuilder
             }
 
             function render(){renderOverview();renderVersionCharts();renderRunDiff();renderMemory();renderDetails()}
-            render();
+            render();writeParams();
             })();
             JS;
     }
