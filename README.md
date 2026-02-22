@@ -64,14 +64,16 @@ open results/index.html
 
 ## Results
 
-Results are saved to `results/YYYYMMDD-HHMMSS/` with:
+**Latest results: <https://carthage-software.github.io/static-analyzers-benchmarks/>**
+
+The dashboard is automatically deployed on every commit to `main`. It includes version comparisons, run-over-run diffs, memory usage, and detailed tables for all runs.
+
+Raw data from previous runs is available in the `results/` directory, each in `results/YYYYMMDD-HHMMSS/` with:
 
 - `report.md` - Final report in Markdown format
 - `report.json` - Structured JSON report
 - `summary.md` - Combined hyperfine results
 - `<project>/` - Per-project hyperfine JSON/Markdown
-
-The final report highlights the fastest analyzer per category with a trophy and shows relative performance (e.g., x5.2 slower than the winner).
 
 ## Adding a New Project
 
