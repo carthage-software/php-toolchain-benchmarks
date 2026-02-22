@@ -4,4 +4,5 @@
 /cache/
 /composer.lock
 /results/index.html
+/results/latest.json
 .DS_Store

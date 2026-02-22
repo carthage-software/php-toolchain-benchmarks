@@ -45,6 +45,17 @@ final readonly class SiteBuilder
 
         File\write($outputPath, $html, File\WriteMode::MustCreate);
 
+        $latestPath = $resultsDir . '/latest.json';
+        if (Filesystem\is_file($latestPath)) {
+            Filesystem\delete_file($latestPath);
+        }
+
+        $latestRun = $runs[Iter\count($runs) - 1];
+        File\write($latestPath, Json\encode([
+            'generated' => $latestRun['generated'],
+            'projects' => $latestRun['projects'],
+        ], true), File\WriteMode::MustCreate);
+
         Output::success(Str\format('Built results page: %s (%d run(s))', $outputPath, Iter\count($runs)));
 
         return 0;
