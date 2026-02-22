@@ -116,6 +116,10 @@ final readonly class Benchmark
             if ($category === null || $category === BenchmarkCategory::Uncached) {
                 $runner->runMemory($ctx);
             }
+
+            if ($category === null || $category === BenchmarkCategory::Cached) {
+                $runner->runCachedMemory($ctx);
+            }
         }
 
         $results->printFinalReport();

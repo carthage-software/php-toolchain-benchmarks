@@ -164,16 +164,13 @@ final readonly class SiteBuilder
             <p class="meta">Latest: {$generated} &middot; {$runCount} run(s) &middot; <a href="https://github.com/carthage-software/static-analyzers-benchmarks">Source</a></p>
             <section>
             <h2>Methodology</h2>
-            <p>All analyzers are run on the same machine, during the same session, under identical conditions. Every analyzer is configured at its <strong>strictest settings</strong> to ensure maximum analysis work. Execution time is measured using <a href="https://github.com/sharkdp/hyperfine">hyperfine</a> with multiple runs and warmup iterations. Peak memory usage is calculated by polling RSS across the entire process tree (including child processes) during an uncached run. Results are sorted by mean execution time.</p>
+            <p>All analyzers are run on the same machine, during the same session, under identical conditions. Every analyzer is configured at its <strong>strictest settings</strong> to ensure maximum analysis work. Execution time is measured using <a href="https://github.com/sharkdp/hyperfine">hyperfine</a> with multiple runs and warmup iterations. Peak memory usage is calculated by polling RSS across the entire process tree (including child processes) during both uncached and cached runs. Results are sorted by mean execution time.</p>
             </section>
             <nav>
             <label>Project <select id="project-select">{$projectOptions}</select></label>
             </nav>
             <div id="categories-content"></div>
-            <section>
-            <h2>Peak Memory (Uncached)</h2>
             <div id="memory-content"></div>
-            </section>
             <section>
             <h2>Run-over-Run Diff</h2>
             <div id="run-diff"></div>
@@ -389,10 +386,7 @@ final readonly class SiteBuilder
                 document.getElementById("categories-content").innerHTML=h;
             }
 
-            function renderMemory(){
-                var run=DATA[DATA.length-1];
-                var entries=getEntries(run,curProj(),"Uncached").filter(function(e){return e.memory_mb!==null});
-                if(!entries.length){document.getElementById("memory-content").innerHTML='<p class="muted">No memory data.</p>';return}
+            function renderMemoryTable(entries){
                 entries.sort(function(a,b){return a.memory_mb-b.memory_mb});
                 var minMem=entries[0].memory_mb;
                 var h='<table><tr><th>Analyzer</th><th>Peak Memory (MB)</th><th>Relative</th></tr>';
@@ -404,7 +398,22 @@ final readonly class SiteBuilder
                     h+='<td>'+e.memory_mb.toFixed(1)+'</td>';
                     h+='<td>'+(w?'&#x1F389; 1.0x':'x'+rel)+'</td></tr>';
                 }
-                h+='</table>';
+                return h+'</table>';
+            }
+
+            function renderMemory(){
+                var run=DATA[DATA.length-1];
+                var proj=curProj();
+                var cats=getCats(run,proj);
+                var h='';
+                for(var ci=0;ci<cats.length;ci++){
+                    var entries=getEntries(run,proj,cats[ci]).filter(function(e){return e.memory_mb!==null});
+                    if(!entries.length){continue}
+                    h+='<section><h2>Peak Memory ('+cats[ci]+')</h2>';
+                    h+=renderMemoryTable(entries);
+                    h+='</section>';
+                }
+                if(!h){h='<p class="muted">No memory data.</p>'}
                 document.getElementById("memory-content").innerHTML=h;
             }
 

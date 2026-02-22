@@ -62,9 +62,9 @@ final class Summary
     /**
      * @param list<MemoryResult> $memoryResults
      */
-    public function writeMemory(array $memoryResults): void
+    public function writeMemory(array $memoryResults, string $label): void
     {
-        $content = "### Peak Memory (Uncached)\n\n";
+        $content = Str\format("### %s\n\n", $label);
         $content .= "| Analyzer | Peak Memory (MB) |\n";
         $content .= "|----------|------------------|\n";
 

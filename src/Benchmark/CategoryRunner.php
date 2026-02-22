@@ -86,7 +86,45 @@ final readonly class CategoryRunner
             $m->peakMemoryMb,
         ));
 
-        $ctx->summary->writeMemory($memoryResults);
+        $ctx->summary->writeMemory($memoryResults, 'Peak Memory (Uncached)');
+    }
+
+    /**
+     * Measure peak memory for each caching analyzer (cached / warm start).
+     */
+    public function runCachedMemory(RunContext $ctx): void
+    {
+        $cachingAnalyzers = Vec\filter($ctx->analyzers, static fn(AnalyzerTool $a): bool => $a->supportsCaching());
+        if ($cachingAnalyzers === []) {
+            return;
+        }
+
+        $project = $ctx->project;
+        $memoryResults = self::measureMemory($cachingAnalyzers, static function (AnalyzerTool $a) use (
+            $project,
+        ): string {
+            $cacheDir = $project->analyzerCacheDir($a);
+
+            // Clear cache, warm it once, then return the command for the measured (cached) run.
+            ShellHelper::exec($a->getClearCacheCommand($cacheDir));
+            ShellHelper::exec(Str\format('%s >/dev/null 2>&1 || true', $a->getCommand(
+                $project->tools,
+                $project->workspace,
+                $project->configDir($a),
+                $cacheDir,
+            )));
+
+            return $a->getCommand($project->tools, $project->workspace, $project->configDir($a), $cacheDir);
+        });
+
+        Vec\map($memoryResults, static fn(MemoryResult $m) => $ctx->results->addMemory(
+            $ctx->project->project,
+            'Cached',
+            $m->analyzerName,
+            $m->peakMemoryMb,
+        ));
+
+        $ctx->summary->writeMemory($memoryResults, 'Peak Memory (Cached)');
     }
 
     /**
