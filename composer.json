@@ -1,5 +1,5 @@
 {
-  "name": "carthage-software/static-analyzers-benchmarks",
+  "name": "carthage-software/php-toolchain-benchmarks",
   "description": "Benchmark suite for PHP formatters, linters, and static analyzers",
   "license": "MIT",
   "require": {

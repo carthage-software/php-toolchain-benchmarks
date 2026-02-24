@@ -4,7 +4,7 @@ Reproducible benchmark suite for PHP **formatters**, **linters**, and **static a
 
 Execution time is measured using a built-in profiler with multiple runs. Peak memory is calculated by polling RSS across the entire process tree (including child processes).
 
-**Latest results: <https://carthage-software.github.io/static-analyzers-benchmarks/>**
+**Latest results: <https://carthage-software.github.io/php-toolchain-benchmarks/>**
 
 ## Tools
 
