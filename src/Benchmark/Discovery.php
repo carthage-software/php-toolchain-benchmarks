@@ -2,13 +2,14 @@
 
 declare(strict_types=1);
 
-namespace CarthageSoftware\StaticAnalyzersBenchmark\Benchmark;
+namespace CarthageSoftware\ToolChainBenchmarks\Benchmark;
 
-use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\Analyzer;
-use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\AnalyzerTool;
-use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\Project;
-use CarthageSoftware\StaticAnalyzersBenchmark\Support\Output;
-use CarthageSoftware\StaticAnalyzersBenchmark\ToolInstaller;
+use CarthageSoftware\ToolChainBenchmarks\Configuration\Project;
+use CarthageSoftware\ToolChainBenchmarks\Configuration\Tool;
+use CarthageSoftware\ToolChainBenchmarks\Configuration\ToolInstance;
+use CarthageSoftware\ToolChainBenchmarks\Configuration\ToolKind;
+use CarthageSoftware\ToolChainBenchmarks\Setup\ToolInstaller;
+use CarthageSoftware\ToolChainBenchmarks\Support\Output;
 use Psl\Filesystem;
 use Psl\Str;
 
@@ -17,30 +18,30 @@ final readonly class Discovery
     /**
      * @param non-empty-string $rootDir
      *
-     * @return list<AnalyzerTool>
+     * @return list<ToolInstance>
      */
-    public static function analyzers(string $rootDir, ?Analyzer $filter): array
+    public static function tools(string $rootDir, ?ToolKind $kindFilter, ?Tool $toolFilter): array
     {
-        $analyzers = [];
-        foreach (ToolInstaller::allTools() as $tool) {
-            if ($filter !== null && $tool->analyzer !== $filter) {
+        $tools = [];
+        foreach (ToolInstaller::allTools() as $instance) {
+            if ($kindFilter !== null && $instance->tool->getKind() !== $kindFilter) {
                 continue;
             }
 
-            if (!$tool->isAvailable($rootDir)) {
-                Output::warn(Str\format('%s is not available, skipping', $tool->getDisplayName()));
+            if ($toolFilter !== null && $instance->tool !== $toolFilter) {
                 continue;
             }
 
-            $analyzers[] = $tool;
-            Output::success(Str\format(
-                'Found analyzer: %s (cache: %s)',
-                $tool->getDisplayName(),
-                $tool->supportsCaching() ? 'yes' : 'no',
-            ));
+            if (!$instance->isAvailable($rootDir)) {
+                Output::warn(Str\format('%s is not available, skipping', $instance->getDisplayName()));
+                continue;
+            }
+
+            $tools[] = $instance;
+            Output::success(Str\format('Found %s: %s', $instance->tool->getKind()->value, $instance->getDisplayName()));
         }
 
-        return $analyzers;
+        return $tools;
     }
 
     /**

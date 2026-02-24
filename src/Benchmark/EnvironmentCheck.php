@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace CarthageSoftware\StaticAnalyzersBenchmark\Benchmark;
+namespace CarthageSoftware\ToolChainBenchmarks\Benchmark;
 
-use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\ToolPaths;
-use CarthageSoftware\StaticAnalyzersBenchmark\Support\Output;
+use CarthageSoftware\ToolChainBenchmarks\Configuration\ToolPaths;
+use CarthageSoftware\ToolChainBenchmarks\Support\Output;
 use Psl\Shell;
 use Psl\Str;
 
@@ -21,10 +21,6 @@ final readonly class EnvironmentCheck
             return;
         }
 
-        if (!$info['opcache']) {
-            Output::warn('OPcache is disabled — PHP analyzers will be slower');
-        }
-
         if ($info['assertions']) {
             Output::warn('PHP assertions are enabled (-dzend.assertions=1) — adds overhead');
         }
@@ -37,20 +33,20 @@ final readonly class EnvironmentCheck
     /**
      * @param non-empty-string $phpBinary
      *
-     * @return null|array{opcache: bool, assertions: bool, xdebug: bool}
+     * @return null|array{assertions: bool, xdebug: bool}
      */
     private static function queryPhp(string $phpBinary): ?array
     {
         try {
             $output = Shell\execute($phpBinary, [
                 '-r',
-                'echo json_encode(["opcache" => function_exists("opcache_get_status") && ini_get("opcache.enable_cli"), "assertions" => (int) ini_get("zend.assertions") === 1, "xdebug" => extension_loaded("xdebug")]);',
+                'echo json_encode(["assertions" => (int) ini_get("zend.assertions") === 1, "xdebug" => extension_loaded("xdebug")]);',
             ]);
         } catch (Shell\Exception\ExceptionInterface) {
             return null;
         }
 
-        /** @var null|array{opcache: bool, assertions: bool, xdebug: bool} */
+        /** @var null|array{assertions: bool, xdebug: bool} */
         return \json_decode(Str\trim($output), true);
     }
 }

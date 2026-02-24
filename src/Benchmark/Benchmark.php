@@ -2,16 +2,17 @@
 
 declare(strict_types=1);
 
-namespace CarthageSoftware\StaticAnalyzersBenchmark\Benchmark;
+namespace CarthageSoftware\ToolChainBenchmarks\Benchmark;
 
-use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\AnalyzerTool;
-use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\BenchmarkCategory;
-use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\Project;
-use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\ToolPaths;
-use CarthageSoftware\StaticAnalyzersBenchmark\Result\BenchmarkResults;
-use CarthageSoftware\StaticAnalyzersBenchmark\Result\Summary;
-use CarthageSoftware\StaticAnalyzersBenchmark\Support\Output;
+use CarthageSoftware\ToolChainBenchmarks\Configuration\Project;
+use CarthageSoftware\ToolChainBenchmarks\Configuration\ToolInstance;
+use CarthageSoftware\ToolChainBenchmarks\Configuration\ToolKind;
+use CarthageSoftware\ToolChainBenchmarks\Configuration\ToolPaths;
+use CarthageSoftware\ToolChainBenchmarks\Result\Results;
+use CarthageSoftware\ToolChainBenchmarks\Result\ResultsExporter;
+use CarthageSoftware\ToolChainBenchmarks\Support\Output;
 use Psl\DateTime;
+use Psl\DateTime\Duration;
 use Psl\Filesystem;
 use Psl\Iter;
 use Psl\Str;
@@ -21,12 +22,11 @@ final readonly class Benchmark
 {
     /**
      * @param int<1, max> $runs
-     * @param int<0, max> $warmup
      */
     public function __construct(
         private ToolPaths $tools,
         private int $runs = 10,
-        private int $warmup = 2,
+        private ?Duration $timeout = null,
         private bool $skipStability = false,
         private BenchmarkFilter $filter = new BenchmarkFilter(),
     ) {}
@@ -38,15 +38,15 @@ final readonly class Benchmark
         $workspaceDir = $rootDir . '/workspace';
         $cacheDir = $rootDir . '/cache';
 
-        $analyzers = Discovery::analyzers($rootDir, $this->filter->analyzer);
-        if ($analyzers === []) {
-            Output::error('No analyzers available. Run: bin/benchmark setup');
+        $allTools = Discovery::tools($rootDir, $this->filter->kind, $this->filter->tool);
+        if ($allTools === []) {
+            Output::error('No tools available. Run: ./src/main.php setup');
             return 1;
         }
 
         $projects = Discovery::projects($workspaceDir, $this->filter->project);
         if ($projects === []) {
-            Output::error('No projects available. Run: bin/benchmark setup');
+            Output::error('No projects available. Run: ./src/main.php setup');
             return 1;
         }
 
@@ -55,12 +55,11 @@ final readonly class Benchmark
         Filesystem\create_directory($resultsDir);
 
         Output::blank();
-        Output::title('PHP Static Analyzer Benchmarks');
+        Output::title('PHP Toolchain Benchmarks');
         Output::blank();
         Output::configLine('Runs', (string) $this->runs);
-        Output::configLine('Warmup', (string) $this->warmup);
-        Output::configLine('Analyzers', Str\join(
-            Vec\map($analyzers, static fn(AnalyzerTool $a): string => $a->getDisplayName()),
+        Output::configLine('Tools', Str\join(
+            Vec\map($allTools, static fn(ToolInstance $t): string => $t->getDisplayName()),
             ', ',
         ));
         Output::configLine('Projects', Str\join(
@@ -83,12 +82,8 @@ final readonly class Benchmark
             return 1;
         }
 
-        $summary = new Summary($resultsDir);
-        $summary->writeHeader($this->runs, $this->warmup);
-
-        $results = new BenchmarkResults();
-        $runner = new CategoryRunner($this->runs, $this->warmup);
-        $category = $this->filter->category;
+        $results = new Results();
+        $runner = new Runner($this->runs, $this->timeout);
 
         $projectCount = Iter\count($projects);
         $projectIndex = 0;
@@ -96,36 +91,52 @@ final readonly class Benchmark
         foreach ($projects as $project) {
             $projectIndex++;
             $ws = Str\format('%s/%s', $workspaceDir, $project->value);
-            $projectResultsDir = Str\format('%s/%s', $resultsDir, $project->value);
-            Filesystem\create_directory($projectResultsDir);
 
             Output::section($project->getDisplayName(), Str\format('[%d/%d]', $projectIndex, $projectCount));
-            $summary->writeProjectHeading($project);
 
-            $projectCtx = new ProjectContext($this->tools, $project, $ws, $cacheDir, $projectResultsDir);
-            $ctx = new RunContext($analyzers, $projectCtx, $summary, $results);
+            $projectCtx = new ProjectContext($this->tools, $project, $ws, $cacheDir);
 
-            if ($category === null || $category === BenchmarkCategory::Uncached) {
-                $runner->runUncached($ctx);
-            }
+            foreach (ToolKind::cases() as $kind) {
+                $kindTools = Vec\filter($allTools, static fn(ToolInstance $t): bool => $t->tool->getKind() === $kind);
+                if ($kindTools === []) {
+                    continue;
+                }
 
-            if ($category === null || $category === BenchmarkCategory::Cached) {
-                $runner->runCached($ctx);
-            }
+                Output::info(Str\format('%s', $kind->getDisplayName()));
+                $ctx = new RunContext($kindTools, $projectCtx, $results);
 
-            if ($category === null || $category === BenchmarkCategory::Uncached) {
-                $runner->runMemory($ctx);
+                match ($kind) {
+                    ToolKind::Formatter => self::runFormatterBenchmarks($runner, $ctx),
+                    ToolKind::Linter => self::runLinterBenchmarks($runner, $ctx),
+                    ToolKind::Analyzer => self::runAnalyzerBenchmarks($runner, $ctx),
+                };
             }
         }
 
-        $results->printFinalReport();
-        $results->exportMarkdown($resultsDir . '/report.md');
-        $results->exportJson($resultsDir . '/report.json');
+        $exporter = new ResultsExporter($results);
+        $exporter->printFinalReport();
+        $exporter->exportJson($resultsDir . '/report.json');
 
         $elapsed = (string) DateTime\Timestamp::now()->since($overallStart);
         Output::success(Str\format('Results saved to %s', $resultsDir));
         Output::success(Str\format('Benchmarks complete (%s)', $elapsed));
 
         return 0;
+    }
+
+    private static function runFormatterBenchmarks(Runner $runner, RunContext $ctx): void
+    {
+        $runner->runBenchmark('Formatter', $ctx);
+    }
+
+    private static function runLinterBenchmarks(Runner $runner, RunContext $ctx): void
+    {
+        $runner->runBenchmark('Linter', $ctx);
+    }
+
+    private static function runAnalyzerBenchmarks(Runner $runner, RunContext $ctx): void
+    {
+        $runner->runUncached($ctx);
+        $runner->runCached($ctx);
     }
 }

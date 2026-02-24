@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace CarthageSoftware\StaticAnalyzersBenchmark\Configuration;
+namespace CarthageSoftware\ToolChainBenchmarks\Configuration;
 
 use Psl\Str;
 
@@ -11,6 +11,8 @@ use Psl\Str;
  */
 final readonly class ToolPaths
 {
+    public const string OPCACHE_FLAGS = '-dopcache.enable=1 -dopcache.enable_cli=1 -dmemory_limit=-1';
+
     /**
      * @param non-empty-string $rootDir
      * @param non-empty-string $phpBinary
@@ -29,26 +31,31 @@ final readonly class ToolPaths
     }
 
     /**
-     * Get the path to a Composer-installed analyzer binary.
+     * Get the path to a Composer-installed tool binary.
      *
      * @return non-empty-string
      */
-    public function analyzerBin(AnalyzerTool $tool): string
+    public function toolBin(ToolInstance $instance): string
     {
-        return Str\format('%s/tools/%s/vendor/bin/%s', $this->rootDir, $tool->slug, $tool->analyzer->value);
+        return Str\format(
+            '%s/tools/%s/vendor/bin/%s',
+            $this->rootDir,
+            $instance->installSlug,
+            $instance->tool->getPackageName(),
+        );
     }
 
     /**
-     * Resolve the native mago binary for a specific versioned slug.
+     * Resolve the native mago binary for a specific versioned install slug.
      *
-     * @param non-empty-string $slug e.g. "mago-1.9.1"
+     * @param non-empty-string $installSlug e.g. "mago-1.10.0"
      *
      * @return non-empty-string
      */
-    public function magoBinaryFor(string $slug): string
+    public function magoBinaryFor(string $installSlug): string
     {
-        $toolDir = Str\format('%s/tools/%s', $this->rootDir, $slug);
-        $version = Str\after($slug, 'mago-') ?? $slug;
+        $toolDir = Str\format('%s/tools/%s', $this->rootDir, $installSlug);
+        $version = Str\after($installSlug, 'mago-') ?? $installSlug;
 
         // TODO(azjezz): hardcoded platform, improve this later.
         return Str\format(

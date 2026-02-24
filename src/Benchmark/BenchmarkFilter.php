@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace CarthageSoftware\StaticAnalyzersBenchmark\Benchmark;
+namespace CarthageSoftware\ToolChainBenchmarks\Benchmark;
 
-use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\Analyzer;
-use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\BenchmarkCategory;
-use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\Project;
+use CarthageSoftware\ToolChainBenchmarks\Configuration\Project;
+use CarthageSoftware\ToolChainBenchmarks\Configuration\Tool;
+use CarthageSoftware\ToolChainBenchmarks\Configuration\ToolKind;
 
 final readonly class BenchmarkFilter
 {
     public function __construct(
-        public ?Analyzer $analyzer = null,
+        public ?ToolKind $kind = null,
+        public ?Tool $tool = null,
         public ?Project $project = null,
-        public ?BenchmarkCategory $category = null,
     ) {}
 }

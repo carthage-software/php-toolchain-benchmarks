@@ -1,0 +1,179 @@
+{
+    "generated": "2026-02-24 05:25:57",
+    "kinds": {
+        "Formatters": [
+            "Formatter"
+        ],
+        "Linters": [
+            "Linter"
+        ],
+        "Analyzers": [
+            "Uncached",
+            "Cached"
+        ]
+    },
+    "projects": {
+        "psl": {
+            "Linter": [
+                {
+                    "tool": "Mago Lint 1.8.0",
+                    "mean": 0.068770125,
+                    "stddev": 0.024751192,
+                    "min": 0.0511335,
+                    "max": 0.10377325,
+                    "memory_mb": 55.6,
+                    "relative": 1.0,
+                    "timed_out": false
+                },
+                {
+                    "tool": "Mago Lint 1.9.1",
+                    "mean": 0.068830222,
+                    "stddev": 0.023870257,
+                    "min": 0.051606583,
+                    "max": 0.1025855,
+                    "memory_mb": 56.4,
+                    "relative": 1.0,
+                    "timed_out": false
+                },
+                {
+                    "tool": "Mago Lint 1.7.0",
+                    "mean": 0.069084111,
+                    "stddev": 0.024558758,
+                    "min": 0.051507584,
+                    "max": 0.103814583,
+                    "memory_mb": 55.2,
+                    "relative": 1.0,
+                    "timed_out": false
+                },
+                {
+                    "tool": "Mago Lint 1.10.0",
+                    "mean": 0.086118111,
+                    "stddev": 0.024214226,
+                    "min": 0.051875042,
+                    "max": 0.103468416,
+                    "memory_mb": 55.7,
+                    "relative": 1.3,
+                    "timed_out": false
+                },
+                {
+                    "tool": "PHP-CS-Fixer 3.75.0",
+                    "mean": 2.077000485,
+                    "stddev": 0.025856955,
+                    "min": 2.057689458,
+                    "max": 2.113548125,
+                    "memory_mb": 625.5,
+                    "relative": 30.2,
+                    "timed_out": false
+                }
+            ]
+        },
+        "wordpress": {
+            "Linter": [
+                {
+                    "tool": "Mago Lint 1.7.0",
+                    "mean": 0.995461528,
+                    "stddev": 0.025300893,
+                    "min": 0.975855875,
+                    "max": 1.031185709,
+                    "memory_mb": 692.5,
+                    "relative": 1.0,
+                    "timed_out": false
+                },
+                {
+                    "tool": "Mago Lint 1.9.1",
+                    "mean": 1.012726444,
+                    "stddev": 0.020667426,
+                    "min": 0.984373041,
+                    "max": 1.033049458,
+                    "memory_mb": 679.0,
+                    "relative": 1.0,
+                    "timed_out": false
+                },
+                {
+                    "tool": "Mago Lint 1.8.0",
+                    "mean": 1.017671236,
+                    "stddev": 0.018974638,
+                    "min": 0.990848375,
+                    "max": 1.031757917,
+                    "memory_mb": 707.1,
+                    "relative": 1.0,
+                    "timed_out": false
+                },
+                {
+                    "tool": "Mago Lint 1.10.0",
+                    "mean": 1.031865875,
+                    "stddev": 0.006214465,
+                    "min": 1.025039209,
+                    "max": 1.040072625,
+                    "memory_mb": 685.9,
+                    "relative": 1.0,
+                    "timed_out": false
+                },
+                {
+                    "tool": "PHP-CS-Fixer 3.75.0",
+                    "mean": 20.969966541,
+                    "stddev": 0.047559741,
+                    "min": 20.903501625,
+                    "max": 21.01212675,
+                    "memory_mb": 831.4,
+                    "relative": 21.1,
+                    "timed_out": false
+                }
+            ]
+        },
+        "magento": {
+            "Linter": [
+                {
+                    "tool": "Mago Lint 1.8.0",
+                    "mean": 1.579733889,
+                    "stddev": 0.003550484,
+                    "min": 1.574999875,
+                    "max": 1.583550292,
+                    "memory_mb": 596.5,
+                    "relative": 1.0,
+                    "timed_out": false
+                },
+                {
+                    "tool": "Mago Lint 1.7.0",
+                    "mean": 1.583648833,
+                    "stddev": 0.023114374,
+                    "min": 1.56622375,
+                    "max": 1.616313125,
+                    "memory_mb": 590.5,
+                    "relative": 1.0,
+                    "timed_out": false
+                },
+                {
+                    "tool": "Mago Lint 1.9.1",
+                    "mean": 1.584435194,
+                    "stddev": 0.022909726,
+                    "min": 1.566283708,
+                    "max": 1.6167526250000002,
+                    "memory_mb": 589.5,
+                    "relative": 1.0,
+                    "timed_out": false
+                },
+                {
+                    "tool": "Mago Lint 1.10.0",
+                    "mean": 1.638628152,
+                    "stddev": 0.064528459,
+                    "min": 1.572643708,
+                    "max": 1.726213625,
+                    "memory_mb": 591.8,
+                    "relative": 1.0,
+                    "timed_out": false
+                },
+                {
+                    "tool": "PHP-CS-Fixer 3.75.0",
+                    "mean": 58.089947861,
+                    "stddev": 0.115756993,
+                    "min": 58.00804125,
+                    "max": 58.253652959,
+                    "memory_mb": 867.1,
+                    "relative": 36.8,
+                    "timed_out": false
+                }
+            ]
+        }
+    }
+}

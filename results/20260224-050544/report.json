@@ -1,0 +1,179 @@
+{
+    "generated": "2026-02-24 05:11:10",
+    "kinds": {
+        "Formatters": [
+            "Formatter"
+        ],
+        "Linters": [
+            "Linter"
+        ],
+        "Analyzers": [
+            "Uncached",
+            "Cached"
+        ]
+    },
+    "projects": {
+        "psl": {
+            "Formatter": [
+                {
+                    "tool": "Mago Fmt 1.7.0",
+                    "mean": 0.068994249,
+                    "stddev": 0.024992981,
+                    "min": 0.051276458,
+                    "max": 0.104339625,
+                    "memory_mb": 78.2,
+                    "relative": 1.0,
+                    "timed_out": false
+                },
+                {
+                    "tool": "Mago Fmt 1.10.0",
+                    "mean": 0.069106444,
+                    "stddev": 0.024131172,
+                    "min": 0.051724708,
+                    "max": 0.103231083,
+                    "memory_mb": 78.4,
+                    "relative": 1.0,
+                    "timed_out": false
+                },
+                {
+                    "tool": "Mago Fmt 1.8.0",
+                    "mean": 0.069509236,
+                    "stddev": 0.024993951,
+                    "min": 0.051623458,
+                    "max": 0.104855167,
+                    "memory_mb": 79.2,
+                    "relative": 1.0,
+                    "timed_out": false
+                },
+                {
+                    "tool": "Mago Fmt 1.9.1",
+                    "mean": 0.069638264,
+                    "stddev": 0.025348637,
+                    "min": 0.051560167,
+                    "max": 0.105486209,
+                    "memory_mb": 79.2,
+                    "relative": 1.0,
+                    "timed_out": false
+                },
+                {
+                    "tool": "Pretty PHP 0.4.95",
+                    "mean": 1.02135061,
+                    "stddev": 0.001152151,
+                    "min": 1.020083417,
+                    "max": 1.02287125,
+                    "memory_mb": 68.6,
+                    "relative": 14.8,
+                    "timed_out": false
+                }
+            ]
+        },
+        "wordpress": {
+            "Formatter": [
+                {
+                    "tool": "Mago Fmt 1.9.1",
+                    "mean": 0.453025972,
+                    "stddev": 0.026036475,
+                    "min": 0.416204875,
+                    "max": 0.47148325,
+                    "memory_mb": 639.9,
+                    "relative": 1.0,
+                    "timed_out": false
+                },
+                {
+                    "tool": "Mago Fmt 1.8.0",
+                    "mean": 0.453043194,
+                    "stddev": 0.018441272,
+                    "min": 0.427057625,
+                    "max": 0.467955208,
+                    "memory_mb": 641.8,
+                    "relative": 1.0,
+                    "timed_out": false
+                },
+                {
+                    "tool": "Mago Fmt 1.10.0",
+                    "mean": 0.46500293,
+                    "stddev": 0.002261668,
+                    "min": 0.461943625,
+                    "max": 0.467340792,
+                    "memory_mb": 617.8,
+                    "relative": 1.0,
+                    "timed_out": false
+                },
+                {
+                    "tool": "Mago Fmt 1.7.0",
+                    "mean": 0.475507347,
+                    "stddev": 0.0034987,
+                    "min": 0.472154958,
+                    "max": 0.480335125,
+                    "memory_mb": 671.2,
+                    "relative": 1.0,
+                    "timed_out": false
+                },
+                {
+                    "tool": "Pretty PHP 0.4.95",
+                    "mean": 22.56368425,
+                    "stddev": 0.143974461,
+                    "min": 22.437749708,
+                    "max": 22.765209583,
+                    "memory_mb": 155.0,
+                    "relative": 49.8,
+                    "timed_out": false
+                }
+            ]
+        },
+        "magento": {
+            "Formatter": [
+                {
+                    "tool": "Mago Fmt 1.8.0",
+                    "mean": 1.57762768,
+                    "stddev": 0.007102945,
+                    "min": 1.568020583,
+                    "max": 1.584972,
+                    "memory_mb": 707.2,
+                    "relative": 1.0,
+                    "timed_out": false
+                },
+                {
+                    "tool": "Mago Fmt 1.9.1",
+                    "mean": 1.585713999,
+                    "stddev": 0.025526687,
+                    "min": 1.5625649579999998,
+                    "max": 1.6212782909999999,
+                    "memory_mb": 737.8,
+                    "relative": 1.0,
+                    "timed_out": false
+                },
+                {
+                    "tool": "Mago Fmt 1.7.0",
+                    "mean": 1.612584305,
+                    "stddev": 0.00427553,
+                    "min": 1.6077126659999998,
+                    "max": 1.618121833,
+                    "memory_mb": 692.2,
+                    "relative": 1.0,
+                    "timed_out": false
+                },
+                {
+                    "tool": "Mago Fmt 1.10.0",
+                    "mean": 1.6167807079999998,
+                    "stddev": 0.05862205,
+                    "min": 1.572531667,
+                    "max": 1.699620417,
+                    "memory_mb": 730.3,
+                    "relative": 1.0,
+                    "timed_out": false
+                },
+                {
+                    "tool": "Pretty PHP 0.4.95",
+                    "mean": 46.152646194,
+                    "stddev": 0.280030384,
+                    "min": 45.759702959,
+                    "max": 46.391805458,
+                    "memory_mb": 114.9,
+                    "relative": 29.3,
+                    "timed_out": false
+                }
+            ]
+        }
+    }
+}

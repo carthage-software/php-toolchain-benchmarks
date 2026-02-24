@@ -2,11 +2,10 @@
 
 declare(strict_types=1);
 
-namespace CarthageSoftware\StaticAnalyzersBenchmark\Benchmark;
+namespace CarthageSoftware\ToolChainBenchmarks\Benchmark;
 
-use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\AnalyzerTool;
-use CarthageSoftware\StaticAnalyzersBenchmark\Result\BenchmarkResults;
-use CarthageSoftware\StaticAnalyzersBenchmark\Result\Summary;
+use CarthageSoftware\ToolChainBenchmarks\Configuration\ToolInstance;
+use CarthageSoftware\ToolChainBenchmarks\Result\Results;
 
 /**
  * Groups the shared dependencies for a benchmark run against a single project.
@@ -14,12 +13,11 @@ use CarthageSoftware\StaticAnalyzersBenchmark\Result\Summary;
 final readonly class RunContext
 {
     /**
-     * @param list<AnalyzerTool> $analyzers
+     * @param list<ToolInstance> $tools
      */
     public function __construct(
-        public array $analyzers,
+        public array $tools,
         public ProjectContext $project,
-        public Summary $summary,
-        public BenchmarkResults $results,
+        public Results $results,
     ) {}
 }

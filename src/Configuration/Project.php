@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace CarthageSoftware\StaticAnalyzersBenchmark\Configuration;
+namespace CarthageSoftware\ToolChainBenchmarks\Configuration;
 
 enum Project: string
 {
@@ -51,5 +51,20 @@ enum Project: string
     public function getSetupCommand(): string
     {
         return 'composer update --no-interaction --quiet --ignore-platform-reqs';
+    }
+
+    /**
+     * Source paths relative to the workspace root.
+     * Used by tools that take paths as CLI arguments (e.g. Pretty PHP).
+     *
+     * @return list<non-empty-string>
+     */
+    public function getSourcePaths(): array
+    {
+        return match ($this) {
+            self::Psl => ['src', 'examples'],
+            self::WordPress => ['src', 'tests'],
+            self::Magento => ['app', 'dev', 'phpserver', 'setup', 'pub'],
+        };
     }
 }

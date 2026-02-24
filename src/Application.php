@@ -2,15 +2,16 @@
 
 declare(strict_types=1);
 
-namespace CarthageSoftware\StaticAnalyzersBenchmark;
+namespace CarthageSoftware\ToolChainBenchmarks;
 
-use CarthageSoftware\StaticAnalyzersBenchmark\Benchmark\Benchmark;
-use CarthageSoftware\StaticAnalyzersBenchmark\Benchmark\BenchmarkFilter;
-use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\Analyzer;
-use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\BenchmarkCategory;
-use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\Project;
-use CarthageSoftware\StaticAnalyzersBenchmark\Configuration\ToolPaths;
-use CarthageSoftware\StaticAnalyzersBenchmark\Support\Output;
+use CarthageSoftware\ToolChainBenchmarks\Benchmark\Benchmark;
+use CarthageSoftware\ToolChainBenchmarks\Benchmark\BenchmarkFilter;
+use CarthageSoftware\ToolChainBenchmarks\Configuration\Project;
+use CarthageSoftware\ToolChainBenchmarks\Configuration\Tool;
+use CarthageSoftware\ToolChainBenchmarks\Configuration\ToolKind;
+use CarthageSoftware\ToolChainBenchmarks\Configuration\ToolPaths;
+use CarthageSoftware\ToolChainBenchmarks\Support\Output;
+use Psl\DateTime\Duration;
 use Psl\Iter;
 use Psl\Math;
 use Psl\Str;
@@ -36,7 +37,7 @@ final class Application
         $rest = Vec\slice($args, 1);
 
         return match ($command) {
-            'setup' => Setup::run($rootDir),
+            'setup' => Setup\Setup::run($rootDir),
             'run' => self::runBenchmark($rootDir, $rest),
             'build' => Site\SiteBuilder::run($rootDir),
             'help', '--help', '-h' => self::printUsage(),
@@ -52,12 +53,12 @@ final class Application
     {
         /** @var int<1, max> $runs */
         $runs = 10;
-        /** @var int<0, max> $warmup */
-        $warmup = 2;
+        /** @var null|int<1, max> $timeout */
+        $timeout = null;
         $skipStability = false;
         $filterProject = null;
-        $filterAnalyzer = null;
-        $filterCategory = null;
+        $filterKind = null;
+        $filterTool = null;
         /** @var null|non-empty-string $phpBinary */
         $phpBinary = null;
 
@@ -66,10 +67,10 @@ final class Application
             $arg = $args[$i];
             match ($arg) {
                 '--runs' => $runs = Math\max([(int) ($args[++$i] ?? '10'), 1]),
-                '--warmup' => $warmup = Math\max([(int) ($args[++$i] ?? '2'), 0]),
+                '--timeout' => $timeout = Math\max([(int) ($args[++$i] ?? '5'), 1]),
                 '--project' => $filterProject = Project::tryFrom($args[++$i] ?? ''),
-                '--analyzer' => $filterAnalyzer = Analyzer::tryFrom($args[++$i] ?? ''),
-                '--category' => $filterCategory = BenchmarkCategory::tryFrom($args[++$i] ?? ''),
+                '--kind' => $filterKind = ToolKind::tryFrom($args[++$i] ?? ''),
+                '--tool' => $filterTool = Tool::tryFrom($args[++$i] ?? ''),
                 '--php-binary' => $phpBinary = ($args[++$i] ?? '') !== '' ? $args[$i] : null,
                 '--skip-stability' => $skipStability = true,
                 default => null,
@@ -81,9 +82,9 @@ final class Application
         $benchmark = new Benchmark(
             tools: ToolPaths::resolve($rootDir, $phpBinary),
             runs: Type\positive_int()->assert($runs),
-            warmup: Type\uint()->assert($warmup),
+            timeout: $timeout !== null ? Duration::minutes($timeout) : null,
             skipStability: $skipStability,
-            filter: new BenchmarkFilter(analyzer: $filterAnalyzer, project: $filterProject, category: $filterCategory),
+            filter: new BenchmarkFilter(kind: $filterKind, tool: $filterTool, project: $filterProject),
         );
 
         return $benchmark->execute();
@@ -91,19 +92,19 @@ final class Application
 
     private static function printUsage(): int
     {
-        Output::write('PHP Static Analyzer Benchmarks');
+        Output::write('PHP Toolchain Benchmarks');
         Output::blank();
         Output::write('Usage:');
-        Output::write('  bin/benchmark setup                Setup: clone projects, install deps');
-        Output::write('  bin/benchmark run [OPTIONS]        Run benchmarks');
-        Output::write('  bin/benchmark build                Build HTML results page');
+        Output::write('  ./src/main.php setup            Setup: clone projects, install deps');
+        Output::write('  ./src/main.php run [OPTIONS]    Run benchmarks');
+        Output::write('  ./src/main.php build            Build HTML results page');
         Output::blank();
         Output::write('Options:');
         Output::write('  --runs N           Number of benchmark runs (default: 10)');
-        Output::write('  --warmup N         Number of warmup runs (default: 2)');
         Output::write('  --project NAME     Only benchmark: psl, wordpress, magento');
-        Output::write('  --analyzer NAME    Only benchmark: mago, phpstan, psalm, phan');
-        Output::write('  --category NAME    Only run: uncached, cached');
+        Output::write('  --kind NAME        Only benchmark: formatter, linter, analyzer');
+        Output::write('  --tool NAME        Only benchmark: mago-fmt, pretty-php, mago-lint, ...');
+        Output::write('  --timeout N        Timeout per run in minutes (default: 5)');
         Output::write('  --php-binary PATH  PHP binary to use (default: current PHP)');
         Output::write('  --skip-stability   Skip CPU stability check');
 

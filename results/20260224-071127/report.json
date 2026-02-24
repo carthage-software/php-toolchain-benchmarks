@@ -1,0 +1,95 @@
+{
+    "generated": "2026-02-24 07:30:35",
+    "kinds": {
+        "Formatters": [
+            "Formatter"
+        ],
+        "Linters": [
+            "Linter"
+        ],
+        "Analyzers": [
+            "Cold",
+            "Hot"
+        ]
+    },
+    "projects": {
+        "psl": {
+            "Cold": [
+                {
+                    "tool": "Psalm 6.15.1",
+                    "mean": 7.865093722,
+                    "stddev": 0.112888225,
+                    "min": 7.74002125,
+                    "max": 8.013556,
+                    "memory_mb": 1365.1,
+                    "relative": 1.0,
+                    "timed_out": false
+                }
+            ],
+            "Hot": [
+                {
+                    "tool": "Psalm 6.15.1",
+                    "mean": 5.192768527,
+                    "stddev": 0.002485884,
+                    "min": 5.189354417,
+                    "max": 5.19520175,
+                    "memory_mb": 1576.9,
+                    "relative": 1.0,
+                    "timed_out": false
+                }
+            ]
+        },
+        "wordpress": {
+            "Cold": [
+                {
+                    "tool": "Psalm 6.15.1",
+                    "mean": 11.605233402,
+                    "stddev": 0.056115274,
+                    "min": 11.526120083,
+                    "max": 11.650193583,
+                    "memory_mb": 4004.3,
+                    "relative": 1.0,
+                    "timed_out": false
+                }
+            ],
+            "Hot": [
+                {
+                    "tool": "Psalm 6.15.1",
+                    "mean": 8.008254528,
+                    "stddev": 0.05258554,
+                    "min": 7.965454375,
+                    "max": 8.082323084,
+                    "memory_mb": 3941.1,
+                    "relative": 1.0,
+                    "timed_out": false
+                }
+            ]
+        },
+        "magento": {
+            "Cold": [
+                {
+                    "tool": "Psalm 6.15.1",
+                    "mean": 0.0,
+                    "stddev": 0.0,
+                    "min": 0.0,
+                    "max": 0.0,
+                    "memory_mb": null,
+                    "relative": 1.0,
+                    "timed_out": true
+                }
+            ],
+            "Hot": [
+                {
+                    "tool": "Psalm 6.15.1",
+                    "mean": 0.0,
+                    "stddev": 0.0,
+                    "min": 0.0,
+                    "max": 0.0,
+                    "memory_mb": null,
+                    "relative": 1.0,
+                    "timed_out": true
+                }
+            ]
+        }
+    }
+}

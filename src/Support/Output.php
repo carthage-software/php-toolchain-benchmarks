@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace CarthageSoftware\StaticAnalyzersBenchmark\Support;
+namespace CarthageSoftware\ToolChainBenchmarks\Support;
 
 use Closure;
 use Psl\Async;
@@ -13,8 +13,6 @@ use Psl\Str;
 
 /**
  * Modern terminal output facade.
- *
- * Replaces Console with clean visual formatting and live spinner support.
  */
 final readonly class Output
 {
@@ -91,8 +89,6 @@ final readonly class Output
 
     /**
      * Run a closure with an animated spinner, returning the closure's result.
-     *
-     * The spinner animates in-place while the work runs in a separate fiber.
      *
      * @template T
      *

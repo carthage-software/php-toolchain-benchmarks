@@ -2,49 +2,19 @@
 
 declare(strict_types=1);
 
-namespace CarthageSoftware\StaticAnalyzersBenchmark\Support;
+namespace CarthageSoftware\ToolChainBenchmarks\Support;
 
-use CarthageSoftware\StaticAnalyzersBenchmark\Result\HyperfineResult;
-use Psl\Filesystem;
 use Psl\Shell;
 
 /**
  * Shell execution utilities for benchmark runners.
  *
- * All commands run with /tmp as working directory to prevent PHP-based analyzers
+ * All commands run with /tmp as working directory to prevent PHP-based tools
  * from discovering the benchmark suite's vendor/autoload.php and conflicting
  * with the workspace project's autoloader.
  */
 final readonly class ShellHelper
 {
-    /**
-     * Run hyperfine with the given arguments and display output.
-     *
-     * @param list<string> $args
-     */
-    public static function runHyperfine(array $args): void
-    {
-        try {
-            Shell\execute('hyperfine', $args, '/tmp', error_output_behavior: Shell\ErrorOutputBehavior::Append);
-        } catch (Shell\Exception\FailedExecutionException) { // @mago-expect lint:no-empty-catch-clause
-            // Hyperfine failures are expected with --ignore-failure; results are in JSON.
-        }
-    }
-
-    /**
-     * Parse hyperfine JSON results.
-     *
-     * @param non-empty-string $jsonFile
-     */
-    public static function parseResults(string $jsonFile): ?HyperfineResult
-    {
-        if (!Filesystem\exists($jsonFile)) {
-            return null;
-        }
-
-        return HyperfineResult::fromFile($jsonFile);
-    }
-
     /**
      * Execute a shell command string, returning false on failure.
      */

@@ -28,11 +28,15 @@ jobs:
 
       - uses: extractions/setup-just@v2
 
+      - uses: nhedger/setup-mago@v1
+        with:
+          version: 1.10.0
+
       - run: composer install --no-interaction
 
       - run: just check
 
-      - run: php bin/benchmark build
+      - run: php src/main.php build
 
       - name: Upload Pages artifact
         if: github.ref == 'refs/heads/main'

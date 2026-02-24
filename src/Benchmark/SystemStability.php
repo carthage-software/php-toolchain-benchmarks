@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace CarthageSoftware\StaticAnalyzersBenchmark\Benchmark;
+namespace CarthageSoftware\ToolChainBenchmarks\Benchmark;
 
-use CarthageSoftware\StaticAnalyzersBenchmark\Support\Output;
-use CarthageSoftware\StaticAnalyzersBenchmark\Support\Spinner;
+use CarthageSoftware\ToolChainBenchmarks\Support\Output;
+use CarthageSoftware\ToolChainBenchmarks\Support\Spinner;
 use Psl\Async;
 use Psl\DateTime;
 use Psl\Math;
@@ -17,10 +17,7 @@ use Psl\Type;
 final readonly class SystemStability
 {
     /**
-     * Warn if CPU usage is above the given threshold.
-     * Does NOT abort — just prints a warning.
-     *
-     * @param int<1, 100> $threshold CPU % above which to warn.
+     * @param int<1, 100> $threshold
      */
     public static function warn(int $threshold = 5): void
     {
@@ -35,14 +32,10 @@ final readonly class SystemStability
     }
 
     /**
-     * Check system stability by sampling CPU usage.
-     *
-     * @param int<1, 100> $maxCpu   Maximum acceptable CPU % per sample.
-     * @param int<1, 100> $margin   Maximum allowed spread between min and max.
-     * @param int<1, 20>  $samples  Number of samples to take.
-     * @param int<1, 10>  $interval Seconds between samples.
-     *
-     * @return bool True if system is stable.
+     * @param int<1, 100> $maxCpu
+     * @param int<1, 100> $margin
+     * @param int<1, 20>  $samples
+     * @param int<1, 10>  $interval
      */
     public static function check(int $maxCpu = 25, int $margin = 5, int $samples = 5, int $interval = 2): bool
     {
@@ -95,9 +88,7 @@ final readonly class SystemStability
     }
 
     /**
-     * Get current CPU usage percentage (user + system) via `top`.
-     *
-     * @return null|int<0, 100> CPU percentage, or null on failure.
+     * @return null|int<0, 100>
      */
     private static function getCpuUsage(): ?int
     {
@@ -107,7 +98,6 @@ final readonly class SystemStability
             return null;
         }
 
-        // Match: CPU usage: 5.26% user, 3.94% sys, 90.79% idle
         $matches = Regex\first_match($output, '/CPU usage:\s+([\d.]+)% user,\s+([\d.]+)% sys/');
 
         if ($matches === null) {

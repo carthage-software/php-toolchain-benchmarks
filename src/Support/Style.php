@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace CarthageSoftware\StaticAnalyzersBenchmark\Support;
+namespace CarthageSoftware\ToolChainBenchmarks\Support;
 
 final readonly class Style
 {
