@@ -29,15 +29,14 @@ final readonly class ToolInstaller
      * @var list<array{non-empty-string, non-empty-string, non-empty-string}>
      */
     private const array PACKAGES = [
+        ['mago',         'carthage-software/mago',    '1.20.0'],
         ['mago',         'carthage-software/mago',    '1.10.0'],
-        ['mago',         'carthage-software/mago',    '1.9.1'],
-        ['mago',         'carthage-software/mago',    '1.8.0'],
         ['mago',         'carthage-software/mago',    '1.7.0'],
         ['pretty-php',   'lkrms/pretty-php',          '0.4.95'],
         ['php-cs-fixer', 'php-cs-fixer/shim',         '3.75.0'],
         ['phpcs',        'squizlabs/php_codesniffer', '3.13.0'],
+        ['phpstan',      'phpstan/phpstan',           '2.1.47'],
         ['phpstan',      'phpstan/phpstan',           '2.1.39'],
-        ['phpstan',      'phpstan/phpstan',           '2.1.34'],
         ['psalm',        'vimeo/psalm',               '6.15.1'],
         ['phan',         'phan/phan',                 '6.0.1'],
     ];
