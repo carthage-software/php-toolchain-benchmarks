@@ -59,11 +59,11 @@ final readonly class SystemStability
             }
         }
 
-        $min = Math\min($readings) ?? 0;
-        $max = Math\max($readings) ?? 0;
+        $min = Math\min($readings);
+        $max = Math\max($readings);
         $spread = $max - $min;
 
-        $tooHigh = Math\max($readings) ?? 0;
+        $tooHigh = Math\max($readings);
         if ($tooHigh > $maxCpu) {
             $spinner->fail(Str\format('CPU too high: %d%% (threshold: %d%%)', $tooHigh, $maxCpu));
             Output::error('Close other applications and try again.');

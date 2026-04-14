@@ -64,7 +64,7 @@ final readonly class ReportNormalizer
             'max' => Type\float()->coerce($entry['max'] ?? 0.0),
             'memory_mb' => ($entry['memory_mb'] ?? null) !== null ? Type\float()->coerce($entry['memory_mb']) : null,
             'relative' => Type\float()->coerce($entry['relative'] ?? 1.0),
-            'timed_out' => (bool) ($entry['timed_out'] ?? false),
+            'timed_out' => (bool) ($entry['timed_out'] ?? false), // @mago-expect analysis:mixed-operand
         ];
     }
 }

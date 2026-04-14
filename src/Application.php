@@ -15,7 +15,6 @@ use Psl\DateTime\Duration;
 use Psl\Iter;
 use Psl\Math;
 use Psl\Str;
-use Psl\Type;
 use Psl\Vec;
 
 final class Application
@@ -81,7 +80,7 @@ final class Application
 
         $benchmark = new Benchmark(
             tools: ToolPaths::resolve($rootDir, $phpBinary),
-            runs: Type\positive_int()->assert($runs),
+            runs: $runs,
             timeout: $timeout !== null ? Duration::minutes($timeout) : null,
             skipStability: $skipStability,
             filter: new BenchmarkFilter(kind: $filterKind, tool: $filterTool, project: $filterProject),

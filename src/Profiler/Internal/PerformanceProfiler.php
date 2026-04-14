@@ -82,13 +82,15 @@ final readonly class PerformanceProfiler
         $pipes = [];
         $before = Timestamp::monotonic();
 
-        // @mago-expect analysis:possibly-invalid-argument
         $proc = proc_open(['sh', '-c', $command], $descriptors, $pipes, '/tmp');
         if ($proc === false) {
             return new ProfileFailure($command, -1, 'Failed to start process');
         }
 
-        fclose($pipes[0]);
+        $stdin = $pipes[0] ?? null;
+        if ($stdin !== null) {
+            fclose($stdin);
+        }
 
         /** @var array{running: bool, exitcode: int} $status */
         $status = proc_get_status($proc);

@@ -22,6 +22,8 @@ use Psl\Str;
  * Uses proc_open to launch the command and polls RSS via {@see ProcessTreeRss}.
  * Falls back to `/usr/bin/time -l` for fast processes where polling misses the peak.
  *
+ * @mago-expect lint:cyclomatic-complexity
+ *
  * @internal
  */
 final readonly class MemoryProfiler
@@ -80,13 +82,15 @@ final readonly class MemoryProfiler
 
         /** @var array<int, resource> $pipes */
         $pipes = [];
-        // @mago-expect analysis:possibly-invalid-argument
         $proc = proc_open(['sh', '-c', $command], $descriptors, $pipes, '/tmp');
         if ($proc === false) {
             return new ProfileFailure($command, -1, 'Failed to start process');
         }
 
-        fclose($pipes[0]);
+        $stdin = $pipes[0] ?? null;
+        if (null !== $stdin) {
+            fclose($stdin);
+        }
 
         /** @var array{running: bool, pid: int, exitcode: int} $status */
         $status = proc_get_status($proc);

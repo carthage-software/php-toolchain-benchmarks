@@ -76,7 +76,6 @@ final readonly class TableRenderer
         /** @var int<0, max> $i */
         $parts = Vec\map_with_key($colWidths, static function (int $i, int $w) use ($cells): string {
             $cell = $cells[$i] ?? '';
-            /** @var int<0, max> $pad */
             $pad = Math\maxva(0, $w - self::displayWidth($cell));
 
             return ' ' . $cell . Str\repeat(' ', $pad) . ' ';
