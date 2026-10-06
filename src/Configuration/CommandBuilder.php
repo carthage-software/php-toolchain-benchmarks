@@ -46,7 +46,9 @@ final readonly class CommandBuilder
             Tool::PhpStan => self::phpToolCommand($tools, $instance, $configDir, 'analyse --configuration=')
                 . ' --memory-limit=-1',
             Tool::Psalm => self::phpToolCommand($tools, $instance, $configDir, '--config=') . ' --show-info',
-            Tool::Phan => self::phpToolCommand($tools, $instance, $configDir, '--config-file ') . ' --memory-limit -1',
+            Tool::Phan => "env TMPDIR={$tools->rootDir}/cache/{$project->value}/{$instance->installSlug} "
+                . self::phpToolCommand($tools, $instance, $configDir, '--config-file ')
+                . ' --memory-limit -1 --allow-polyfill-parser',
         };
     }
 

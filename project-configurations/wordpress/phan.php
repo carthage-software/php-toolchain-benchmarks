@@ -12,7 +12,6 @@ return [
         '{{WORKSPACE}}/src/js',
         '{{WORKSPACE}}/vendor',
     ],
-    'cache_directory' => '{{CACHE_DIR}}',
     'analyze_signature_compatibility' => true,
     'allow_missing_properties' => false,
     'null_casts_as_any_type' => false,
