@@ -40,30 +40,8 @@
             ]
         },
         "wordpress": {
-            "Cold": [
-                {
-                    "tool": "Psalm 6.15.1",
-                    "mean": 11.605233402,
-                    "stddev": 0.056115274,
-                    "min": 11.526120083,
-                    "max": 11.650193583,
-                    "memory_mb": 4004.3,
-                    "relative": 1.0,
-                    "timed_out": false
-                }
-            ],
-            "Hot": [
-                {
-                    "tool": "Psalm 6.15.1",
-                    "mean": 8.008254528,
-                    "stddev": 0.05258554,
-                    "min": 7.965454375,
-                    "max": 8.082323084,
-                    "memory_mb": 3941.1,
-                    "relative": 1.0,
-                    "timed_out": false
-                }
-            ]
+            "Cold": [],
+            "Hot": []
         },
         "magento": {
             "Cold": [

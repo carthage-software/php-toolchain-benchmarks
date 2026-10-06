@@ -330,16 +330,6 @@
                     "timed_out": false
                 },
                 {
-                    "tool": "Psalm 6.15.1",
-                    "mean": 11.525330245,
-                    "stddev": 0.048426515,
-                    "min": 11.438175708,
-                    "max": 11.591120375,
-                    "memory_mb": 4003.7,
-                    "relative": 110.3,
-                    "timed_out": false
-                },
-                {
                     "tool": "PHPStan 2.1.47",
                     "mean": 55.862970545,
                     "stddev": 0.40133104,
@@ -369,16 +359,6 @@
                     "max": 4.513978833,
                     "memory_mb": 822.1,
                     "relative": 31.8,
-                    "timed_out": false
-                },
-                {
-                    "tool": "Psalm 6.15.1",
-                    "mean": 7.957959616,
-                    "stddev": 0.046370764,
-                    "min": 7.906969375,
-                    "max": 8.056945083,
-                    "memory_mb": 3920.5,
-                    "relative": 76.1,
                     "timed_out": false
                 },
                 {
