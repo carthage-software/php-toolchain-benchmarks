@@ -1,0 +1,89 @@
+{
+    "generated": "2026-10-07 04:47:08",
+    "kinds": {
+        "Formatters": [
+            "Formatter"
+        ],
+        "Linters": [
+            "Linter"
+        ],
+        "Analyzers": [
+            "Cold",
+            "Hot"
+        ]
+    },
+    "projects": {
+        "psl": {
+            "Linter": [
+                {
+                    "tool": "Mago Lint 1.52.0",
+                    "mean": 0.055364049,
+                    "stddev": 0.001376435,
+                    "min": 0.052519333,
+                    "max": 0.056370792,
+                    "memory_mb": 51.6,
+                    "relative": 1.0,
+                    "timed_out": false
+                },
+                {
+                    "tool": "Mago Lint 1.51.2",
+                    "mean": 0.055702608,
+                    "stddev": 0.001200581,
+                    "min": 0.052336417,
+                    "max": 0.056426667,
+                    "memory_mb": 52.8,
+                    "relative": 1.0,
+                    "timed_out": false
+                }
+            ]
+        },
+        "wordpress": {
+            "Linter": [
+                {
+                    "tool": "Mago Lint 1.52.0",
+                    "mean": 0.90348687,
+                    "stddev": 0.014922146,
+                    "min": 0.869772084,
+                    "max": 0.91899175,
+                    "memory_mb": 721.3,
+                    "relative": 1.0,
+                    "timed_out": false
+                },
+                {
+                    "tool": "Mago Lint 1.51.2",
+                    "mean": 0.911923862,
+                    "stddev": 0.009168953,
+                    "min": 0.8959215,
+                    "max": 0.925017208,
+                    "memory_mb": 731.7,
+                    "relative": 1.0,
+                    "timed_out": false
+                }
+            ]
+        },
+        "magento": {
+            "Linter": [
+                {
+                    "tool": "Mago Lint 1.52.0",
+                    "mean": 0.869470904,
+                    "stddev": 0.008215529,
+                    "min": 0.855036583,
+                    "max": 0.882356,
+                    "memory_mb": 491.5,
+                    "relative": 1.0,
+                    "timed_out": false
+                },
+                {
+                    "tool": "Mago Lint 1.51.2",
+                    "mean": 0.998599704,
+                    "stddev": 0.020300827,
+                    "min": 0.974859583,
+                    "max": 1.02594075,
+                    "memory_mb": 515.7,
+                    "relative": 1.1,
+                    "timed_out": false
+                }
+            ]
+        }
+    }
+}
