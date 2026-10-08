@@ -18,39 +18,14 @@ check-arrow-function-missing-type-hints = true
 enforce-class-finality = true
 require-api-or-internal = true
 
+# Mirrors deptrac.yaml as far as namespaces allow (App: ~, Setup: [App], Dev: [App, Setup, Pub]).
+
+# Setup code may only be used by Setup itself and by tests.
 [[guard.perimeter.restrictions]]
 dependency = "Magento\\Setup\\**"
-allow-from = ["Magento\\Setup\\", "Magento\\Framework\\Setup\\"]
+allow-from = ["Magento\\Setup\\", "Magento\\**\\Test\\**", "Magento\\TestFramework\\"]
 
+# Test framework code may only be used by tests.
 [[guard.perimeter.restrictions]]
 dependency = "Magento\\TestFramework\\**"
 allow-from = ["Magento\\TestFramework\\", "Magento\\Test\\", "Magento\\**\\Test\\**"]
-
-[[guard.perimeter.restrictions]]
-dependency = "PHPUnit\\**"
-allow-from = ["Magento\\TestFramework\\", "Magento\\Test\\", "Magento\\**\\Test\\**"]
-
-[[guard.structural.rules]]
-on = "Magento\\**\\Api\\Data\\**"
-target = "interface"
-must-be-named = "*Interface"
-reason = "Service data contracts follow the *Interface naming convention."
-
-[[guard.structural.rules]]
-on = "Magento\\**\\Observer\\**"
-target = "class"
-must-implement = "Magento\\Framework\\Event\\ObserverInterface"
-reason = "Event observers implement ObserverInterface."
-
-[[guard.structural.rules]]
-on = "Magento\\**\\Controller\\**"
-target = "class"
-must-implement = "Magento\\Framework\\App\\ActionInterface"
-reason = "Controller actions implement ActionInterface."
-
-[[guard.structural.rules]]
-on = "Magento\\**\\Test\\Unit\\**"
-target = "class"
-must-be-named = "*Test"
-must-extend = "PHPUnit\\Framework\\TestCase"
-reason = "Unit tests follow the *Test naming convention and extend the PHPUnit test case."
