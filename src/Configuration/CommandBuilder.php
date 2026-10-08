@@ -49,6 +49,22 @@ final readonly class CommandBuilder
             Tool::Phan => "env TMPDIR={$tools->rootDir}/cache/{$project->value}/{$instance->installSlug} "
                 . self::phpToolCommand($tools, $instance, $configDir, '--config-file ')
                 . ' --memory-limit -1 --allow-polyfill-parser',
+            Tool::MagoGuard => self::magoCommand(
+                $tools,
+                $instance,
+                $workspace,
+                $configDir,
+                'guard --reporting-format=emacs',
+            ),
+            Tool::Deptrac => self::phpToolCommand(
+                $tools,
+                $instance,
+                $configDir,
+                'analyse --no-progress --config-file=',
+            ),
+            // StructArmed resolves the project root (composer.json, layer paths, cache) from the working directory.
+            Tool::StructArmed => "cd {$workspace} && "
+                . self::phpToolCommand($tools, $instance, $configDir, 'analyse --no-progress --config='),
         };
     }
 

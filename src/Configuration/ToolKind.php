@@ -9,6 +9,7 @@ enum ToolKind: string
     case Formatter = 'formatter';
     case Linter = 'linter';
     case Analyzer = 'analyzer';
+    case Guard = 'guard';
 
     /**
      * @return non-empty-string
@@ -19,11 +20,14 @@ enum ToolKind: string
             self::Formatter => 'Formatters',
             self::Linter => 'Linters',
             self::Analyzer => 'Analyzers',
+            self::Guard => 'Architecture Guards',
         };
     }
 
     /**
      * Returns the benchmark categories for this tool kind.
+     *
+     * Analyzers and architecture guards are measured cold (caches cleared) and hot (caches warmed).
      *
      * @return list<non-empty-string>
      */
@@ -32,7 +36,7 @@ enum ToolKind: string
         return match ($this) {
             self::Formatter => ['Formatter'],
             self::Linter => ['Linter'],
-            self::Analyzer => ['Cold', 'Hot'],
+            self::Analyzer, self::Guard => ['Cold', 'Hot'],
         };
     }
 }

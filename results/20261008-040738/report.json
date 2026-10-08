@@ -1,0 +1,249 @@
+{
+    "generated": "2026-10-08 04:20:25",
+    "kinds": {
+        "Formatters": [
+            "Formatter"
+        ],
+        "Linters": [
+            "Linter"
+        ],
+        "Analyzers": [
+            "Cold",
+            "Hot"
+        ],
+        "Architecture Guards": [
+            "Cold",
+            "Hot"
+        ]
+    },
+    "projects": {
+        "psl": {
+            "Cold": [
+                {
+                    "tool": "Mago Guard 1.52.0",
+                    "mean": 0.107814129,
+                    "stddev": 0.002838449,
+                    "min": 0.103232208,
+                    "max": 0.110983958,
+                    "memory_mb": 111.3,
+                    "relative": 1.0,
+                    "timed_out": false
+                },
+                {
+                    "tool": "Mago Guard 1.51.2",
+                    "mean": 0.108905116,
+                    "stddev": 0.002191754,
+                    "min": 0.104358375,
+                    "max": 0.110868417,
+                    "memory_mb": 110.9,
+                    "relative": 1.0,
+                    "timed_out": false
+                },
+                {
+                    "tool": "Mago Guard 1.53.0",
+                    "mean": 0.15069512,
+                    "stddev": 0.086012383,
+                    "min": 0.1032845,
+                    "max": 0.322706,
+                    "memory_mb": 111.7,
+                    "relative": 1.4,
+                    "timed_out": false
+                },
+                {
+                    "tool": "StructArmed 0.18.11",
+                    "mean": 0.3834235,
+                    "stddev": 0.016919845,
+                    "min": 0.371337917,
+                    "max": 0.433164208,
+                    "memory_mb": 395.0,
+                    "relative": 3.6,
+                    "timed_out": false
+                },
+                {
+                    "tool": "Deptrac 4.7.2",
+                    "mean": 0.966792475,
+                    "stddev": 0.012988239,
+                    "min": 0.934041125,
+                    "max": 0.984078292,
+                    "memory_mb": 92.9,
+                    "relative": 9.0,
+                    "timed_out": false
+                }
+            ],
+            "Hot": [
+                {
+                    "tool": "StructArmed 0.18.11",
+                    "mean": 0.108669453,
+                    "stddev": 0.00227666,
+                    "min": 0.104047041,
+                    "max": 0.11094975,
+                    "memory_mb": 28.6,
+                    "relative": 1.0,
+                    "timed_out": false
+                },
+                {
+                    "tool": "Deptrac 4.7.2",
+                    "mean": 0.438161716,
+                    "stddev": 0.021250156,
+                    "min": 0.42221275,
+                    "max": 0.481892875,
+                    "memory_mb": 104.3,
+                    "relative": 4.0,
+                    "timed_out": false
+                }
+            ]
+        },
+        "wordpress": {
+            "Cold": [
+                {
+                    "tool": "Mago Guard 1.51.2",
+                    "mean": 0.1602644,
+                    "stddev": 0.003067368,
+                    "min": 0.156133667,
+                    "max": 0.165836042,
+                    "memory_mb": 208.6,
+                    "relative": 1.0,
+                    "timed_out": false
+                },
+                {
+                    "tool": "Mago Guard 1.52.0",
+                    "mean": 0.16361622,
+                    "stddev": 0.002553713,
+                    "min": 0.159131292,
+                    "max": 0.16702675,
+                    "memory_mb": 125.1,
+                    "relative": 1.0,
+                    "timed_out": false
+                },
+                {
+                    "tool": "Mago Guard 1.53.0",
+                    "mean": 0.182224412,
+                    "stddev": 0.064700415,
+                    "min": 0.157196584,
+                    "max": 0.376224417,
+                    "memory_mb": 384.3,
+                    "relative": 1.1,
+                    "timed_out": false
+                },
+                {
+                    "tool": "StructArmed 0.18.11",
+                    "mean": 1.149461129,
+                    "stddev": 0.056225317,
+                    "min": 1.079128208,
+                    "max": 1.288526083,
+                    "memory_mb": 717.6,
+                    "relative": 7.2,
+                    "timed_out": false
+                },
+                {
+                    "tool": "Deptrac 4.7.2",
+                    "mean": 10.720424774,
+                    "stddev": 0.233194804,
+                    "min": 10.477305584,
+                    "max": 11.081591708,
+                    "memory_mb": 333.1,
+                    "relative": 66.9,
+                    "timed_out": false
+                }
+            ],
+            "Hot": [
+                {
+                    "tool": "StructArmed 0.18.11",
+                    "mean": 0.160400608,
+                    "stddev": 0.002331584,
+                    "min": 0.156885042,
+                    "max": 0.163473917,
+                    "memory_mb": 29.8,
+                    "relative": 1.0,
+                    "timed_out": false
+                },
+                {
+                    "tool": "Deptrac 4.7.2",
+                    "mean": 3.1615693990000002,
+                    "stddev": 0.008580327,
+                    "min": 3.147740084,
+                    "max": 3.176136833,
+                    "memory_mb": 631.4,
+                    "relative": 19.7,
+                    "timed_out": false
+                }
+            ]
+        },
+        "magento": {
+            "Cold": [
+                {
+                    "tool": "Mago Guard 1.53.0",
+                    "mean": 1.218734433,
+                    "stddev": 0.169296609,
+                    "min": 1.073530167,
+                    "max": 1.5513310420000002,
+                    "memory_mb": 533.5,
+                    "relative": 1.0,
+                    "timed_out": false
+                },
+                {
+                    "tool": "Mago Guard 1.51.2",
+                    "mean": 1.5726673249999998,
+                    "stddev": 0.049604146,
+                    "min": 1.491679917,
+                    "max": 1.655254375,
+                    "memory_mb": 551.9,
+                    "relative": 1.3,
+                    "timed_out": false
+                },
+                {
+                    "tool": "StructArmed 0.18.11",
+                    "mean": 1.708689345,
+                    "stddev": 1.120697045,
+                    "min": 1.225592125,
+                    "max": 5.057871583,
+                    "memory_mb": 46.2,
+                    "relative": 1.4,
+                    "timed_out": false
+                },
+                {
+                    "tool": "Mago Guard 1.52.0",
+                    "mean": 2.551510987,
+                    "stddev": 0.111258113,
+                    "min": 2.236382708,
+                    "max": 2.650656875,
+                    "memory_mb": 584.3,
+                    "relative": 2.1,
+                    "timed_out": false
+                },
+                {
+                    "tool": "Deptrac 4.7.2",
+                    "mean": 27.543506879,
+                    "stddev": 0.267375594,
+                    "min": 27.040441208,
+                    "max": 27.970431875,
+                    "memory_mb": 1028.1,
+                    "relative": 22.6,
+                    "timed_out": false
+                }
+            ],
+            "Hot": [
+                {
+                    "tool": "StructArmed 0.18.11",
+                    "mean": 1.247405062,
+                    "stddev": 0.068186086,
+                    "min": 1.191247125,
+                    "max": 1.436967,
+                    "memory_mb": 45.7,
+                    "relative": 1.0,
+                    "timed_out": false
+                },
+                {
+                    "tool": "Deptrac 4.7.2",
+                    "mean": 10.780183516,
+                    "stddev": 0.041779333,
+                    "min": 10.726928416,
+                    "max": 10.846824,
+                    "memory_mb": 1847.9,
+                    "relative": 8.6,
+                    "timed_out": false
+                }
+            ]
+        }
+    }
+}

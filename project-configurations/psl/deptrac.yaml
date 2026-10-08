@@ -1,0 +1,27 @@
+deptrac:
+  paths:
+    - {{WORKSPACE}}/src
+    - {{WORKSPACE}}/examples
+  cache_file: {{CACHE_DIR}}/deptrac.cache
+  analyser:
+    types:
+      - class
+      - class_superglobal
+      - file
+      - function
+      - function_call
+      - function_superglobal
+      - use
+  layers:
+    - name: Library
+      collectors:
+        - type: directory
+          value: {{WORKSPACE}}/src/
+    - name: Examples
+      collectors:
+        - type: directory
+          value: {{WORKSPACE}}/examples/
+  ruleset:
+    Library: ~
+    Examples:
+      - Library

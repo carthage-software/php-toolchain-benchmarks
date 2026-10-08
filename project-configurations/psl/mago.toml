@@ -19,3 +19,42 @@ check-closure-missing-type-hints = true
 check-arrow-function-missing-type-hints = true
 enforce-class-finality = true
 require-api-or-internal = true
+
+[guard.perimeter.layers]
+event-loop = ["Revolt\\**"]
+
+[[guard.perimeter.rules]]
+namespace = "Psl\\"
+permit = ["@self", "@native", "@layer:event-loop"]
+
+[[guard.perimeter.restrictions]]
+dependency = "Revolt\\**"
+deny-from = ["Psl\\Str\\", "Psl\\Vec\\", "Psl\\Dict\\", "Psl\\Iter\\", "Psl\\Math\\", "Psl\\Type\\"]
+
+[[guard.perimeter.restrictions]]
+dependency = "Psl\\Internal\\**"
+deny-from = ["Psl\\Example\\"]
+
+[[guard.structural.rules]]
+on = "Psl\\**"
+target = "class"
+must-be-final = true
+reason = "Library classes are final unless designed for extension."
+
+[[guard.structural.rules]]
+on = "Psl\\**\\Exception\\**"
+target = "class"
+must-be-named = "*Exception"
+reason = "Exception classes follow the *Exception naming convention."
+
+[[guard.structural.rules]]
+on = "Psl\\**\\Exception\\**"
+target = "interface"
+must-be-named = "*Interface"
+reason = "Exception interfaces follow the *Interface naming convention."
+
+[[guard.structural.rules]]
+on = "Psl\\Type\\Internal\\**"
+target = "class"
+must-extend = "Psl\\Type\\Type"
+reason = "Internal type implementations extend the base Type class."

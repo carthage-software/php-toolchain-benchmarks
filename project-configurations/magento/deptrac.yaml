@@ -1,0 +1,50 @@
+deptrac:
+  paths:
+    - {{WORKSPACE}}/app
+    - {{WORKSPACE}}/dev
+    - {{WORKSPACE}}/phpserver
+    - {{WORKSPACE}}/setup
+    - {{WORKSPACE}}/pub
+  cache_file: {{CACHE_DIR}}/deptrac.cache
+  analyser:
+    types:
+      - class
+      - class_superglobal
+      - file
+      - function
+      - function_call
+      - function_superglobal
+      - use
+  layers:
+    - name: App
+      collectors:
+        - type: directory
+          value: {{WORKSPACE}}/app/
+    - name: Dev
+      collectors:
+        - type: directory
+          value: {{WORKSPACE}}/dev/
+    - name: PhpServer
+      collectors:
+        - type: directory
+          value: {{WORKSPACE}}/phpserver/
+    - name: Setup
+      collectors:
+        - type: directory
+          value: {{WORKSPACE}}/setup/
+    - name: Pub
+      collectors:
+        - type: directory
+          value: {{WORKSPACE}}/pub/
+  ruleset:
+    App: ~
+    PhpServer: ~
+    Setup:
+      - App
+    Pub:
+      - App
+      - Setup
+    Dev:
+      - App
+      - Setup
+      - Pub
