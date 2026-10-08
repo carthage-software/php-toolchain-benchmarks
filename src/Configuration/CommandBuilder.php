@@ -96,6 +96,10 @@ final readonly class CommandBuilder
     /**
      * Command to clear this tool's cache directory.
      *
+     * Uses `find -delete` rather than `rm -rf dir/*`: a shell glob over a flat cache with tens of
+     * thousands of files (e.g. StructArmed on Magento) exceeds ARG_MAX, so `rm` never runs and the
+     * "cold" runs silently reuse the cache.
+     *
      * @param non-empty-string $cacheDir
      *
      * @return non-empty-string
@@ -103,7 +107,7 @@ final readonly class CommandBuilder
     public static function clearCache(ToolInstance $instance, string $cacheDir): string
     {
         if ($instance->supportsCaching()) {
-            return Str\format('rm -rf %s/*', $cacheDir);
+            return Str\format('find %s -mindepth 1 -delete', $cacheDir);
         }
 
         return 'true';
