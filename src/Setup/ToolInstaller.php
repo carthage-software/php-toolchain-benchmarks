@@ -39,7 +39,7 @@ final readonly class ToolInstaller
         ['psalm',        'vimeo/psalm',               '6.19.1'],
         ['phan',         'phan/phan',                 '6.0.7'],
         ['deptrac',      'deptrac/deptrac',           '4.7.2'],
-        ['structarmed',  'boundwize/structarmed',     '0.19.1'],
+        ['structarmed',  'boundwize/structarmed',     '0.19.3'],
     ];
 
     /**
