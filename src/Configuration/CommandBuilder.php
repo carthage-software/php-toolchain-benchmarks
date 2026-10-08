@@ -62,9 +62,13 @@ final readonly class CommandBuilder
                 $configDir,
                 'analyse --no-progress --config-file=',
             ),
-            // StructArmed resolves the project root (composer.json, layer paths, cache) from the working directory.
-            Tool::StructArmed => "cd {$workspace} && "
-                . self::phpToolCommand($tools, $instance, $configDir, 'analyse --no-progress --config='),
+            // --basepath sets the project root (composer.json, layer paths, cache) instead of the working directory.
+            Tool::StructArmed => self::phpToolCommand(
+                $tools,
+                $instance,
+                $configDir,
+                "analyse --no-progress --basepath={$workspace} --config=",
+            ),
         };
     }
 
