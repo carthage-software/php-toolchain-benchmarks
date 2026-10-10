@@ -17,3 +17,15 @@ check-closure-missing-type-hints = true
 check-arrow-function-missing-type-hints = true
 enforce-class-finality = true
 require-api-or-internal = true
+
+# Mirrors deptrac.yaml as far as namespaces allow (App: ~, Setup: [App], Dev: [App, Setup, Pub]).
+
+# Setup code may only be used by Setup itself and by tests.
+[[guard.perimeter.restrictions]]
+dependency = "Magento\\Setup\\**"
+allow-from = ["Magento\\Setup\\", "Magento\\**\\Test\\**", "Magento\\TestFramework\\"]
+
+# Test framework code may only be used by tests.
+[[guard.perimeter.restrictions]]
+dependency = "Magento\\TestFramework\\**"
+allow-from = ["Magento\\TestFramework\\", "Magento\\Test\\", "Magento\\**\\Test\\**"]

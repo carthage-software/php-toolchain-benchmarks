@@ -49,6 +49,26 @@ final readonly class CommandBuilder
             Tool::Phan => "env TMPDIR={$tools->rootDir}/cache/{$project->value}/{$instance->installSlug} "
                 . self::phpToolCommand($tools, $instance, $configDir, '--config-file ')
                 . ' --memory-limit -1 --allow-polyfill-parser',
+            Tool::MagoGuard => self::magoCommand(
+                $tools,
+                $instance,
+                $workspace,
+                $configDir,
+                'guard --reporting-format=emacs',
+            ),
+            Tool::Deptrac => self::phpToolCommand(
+                $tools,
+                $instance,
+                $configDir,
+                'analyse --no-progress --config-file=',
+            ),
+            // --basepath sets the project root (composer.json, layer paths, cache) instead of the working directory.
+            Tool::StructArmed => self::phpToolCommand(
+                $tools,
+                $instance,
+                $configDir,
+                "analyse --no-progress --basepath={$workspace} --config=",
+            ),
         };
     }
 
@@ -80,6 +100,10 @@ final readonly class CommandBuilder
     /**
      * Command to clear this tool's cache directory.
      *
+     * Uses `find -delete` rather than `rm -rf dir/*`: a shell glob over a flat cache with tens of
+     * thousands of files (e.g. StructArmed on Magento) exceeds ARG_MAX, so `rm` never runs and the
+     * "cold" runs silently reuse the cache.
+     *
      * @param non-empty-string $cacheDir
      *
      * @return non-empty-string
@@ -87,7 +111,7 @@ final readonly class CommandBuilder
     public static function clearCache(ToolInstance $instance, string $cacheDir): string
     {
         if ($instance->supportsCaching()) {
-            return Str\format('rm -rf %s/*', $cacheDir);
+            return Str\format('find %s -mindepth 1 -delete', $cacheDir);
         }
 
         return 'true';
