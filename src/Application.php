@@ -101,7 +101,7 @@ final class Application
         Output::write('Options:');
         Output::write('  --runs N           Number of benchmark runs (default: 10)');
         Output::write('  --project NAME     Only benchmark: psl, wordpress, magento');
-        Output::write('  --kind NAME        Only benchmark: formatter, linter, analyzer');
+        Output::write('  --kind NAME        Only benchmark: formatter, linter, analyzer, guard');
         Output::write('  --tool NAME        Only benchmark: mago-fmt, pretty-php, mago-lint, ...');
         Output::write('  --timeout N        Timeout per run in minutes (default: 5)');
         Output::write('  --php-binary PATH  PHP binary to use (default: current PHP)');

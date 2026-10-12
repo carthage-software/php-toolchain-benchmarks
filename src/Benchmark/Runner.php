@@ -45,7 +45,7 @@ final readonly class Runner
     }
 
     /**
-     * Run the uncached benchmark for analyzers.
+     * Run the uncached benchmark for analyzers and architecture guards.
      *
      * Clears cache before each run via prepare command.
      */

@@ -24,7 +24,7 @@ final readonly class ToolInstaller
     /**
      * All tool packages to install.
      * Each entry: [package-short-name, composer-package, version].
-     * Mago appears once per version — one install serves fmt + lint + analyze.
+     * Mago appears once per version — one install serves fmt + lint + analyze + guard.
      *
      * @var list<array{non-empty-string, non-empty-string, non-empty-string}>
      */
@@ -38,6 +38,8 @@ final readonly class ToolInstaller
         ['phpstan',      'phpstan/phpstan',           '2.3.0'],
         ['psalm',        'vimeo/psalm',               '6.19.1'],
         ['phan',         'phan/phan',                 '6.0.7'],
+        ['deptrac',      'deptrac/deptrac',           '4.7.2'],
+        ['structarmed',  'boundwize/structarmed',     '0.19.3'],
     ];
 
     /**
@@ -71,7 +73,7 @@ final readonly class ToolInstaller
     }
 
     /**
-     * Returns all tool instances, expanding Mago packages into three tools each.
+     * Returns all tool instances, expanding Mago packages into four tools each.
      *
      * @return list<ToolInstance>
      */

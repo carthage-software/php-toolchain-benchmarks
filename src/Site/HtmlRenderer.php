@@ -44,9 +44,9 @@ final readonly class HtmlRenderer
             <head>
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1">
-            <title>PHP Toolchain Benchmarks — Formatters, Linters, Analyzers</title>
-            <meta name="description" content="Performance benchmarks comparing PHP tools: formatters (Mago Fmt, Pretty PHP), linters (Mago Lint, PHP-CS-Fixer, PHPCS), and analyzers (Mago, PHPStan, Psalm, Phan). Execution time and memory usage across real-world projects.">
-            <meta name="keywords" content="PHP, benchmark, formatter, linter, static analysis, Mago, PHPStan, Psalm, Phan, PHP-CS-Fixer, PHPCS, Pretty PHP, performance, comparison">
+            <title>PHP Toolchain Benchmarks — Formatters, Linters, Analyzers, Architecture Guards</title>
+            <meta name="description" content="Performance benchmarks comparing PHP tools: formatters (Mago Fmt, Pretty PHP), linters (Mago Lint, PHP-CS-Fixer, PHPCS), analyzers (Mago, PHPStan, Psalm, Phan), and architecture guards (Mago Guard, Deptrac, StructArmed). Execution time and memory usage across real-world projects.">
+            <meta name="keywords" content="PHP, benchmark, formatter, linter, static analysis, architecture, Mago, PHPStan, Psalm, Phan, PHP-CS-Fixer, PHPCS, Pretty PHP, Deptrac, StructArmed, performance, comparison">
             <meta name="robots" content="index, follow">
             <link rel="canonical" href="https://carthage-software.github.io/static-analyzers-benchmarks/">
             <meta property="og:type" content="website">
@@ -63,14 +63,15 @@ final readonly class HtmlRenderer
             <p class="meta">Latest: {$generated} &middot; {$runCount} run(s) &middot; <a href="https://github.com/carthage-software/static-analyzers-benchmarks">Source</a></p>
             <section>
             <h2>Methodology</h2>
-            <p>This project benchmarks PHP <strong>formatters</strong> (<a href="https://github.com/carthage-software/mago">Mago Fmt</a>, <a href="https://github.com/lkrms/pretty-php">Pretty PHP</a>), <strong>linters</strong> (<a href="https://github.com/carthage-software/mago">Mago Lint</a>, <a href="https://github.com/PHP-CS-Fixer/PHP-CS-Fixer">PHP-CS-Fixer</a>, <a href="https://github.com/PHPCSStandards/PHP_CodeSniffer">PHPCS</a>), and <strong>static analyzers</strong> (<a href="https://github.com/carthage-software/mago">Mago</a>, <a href="https://github.com/phpstan/phpstan">PHPStan</a>, <a href="https://github.com/vimeo/psalm">Psalm</a>, <a href="https://github.com/phan/phan">Phan</a>) against real-world open-source codebases.</p>
-            <p>All tools are run on the same machine, during the same session, under identical conditions. Every tool is configured at its <strong>strictest settings</strong> to ensure maximum work. Execution time is measured using a built-in profiler with multiple runs. Peak memory usage is calculated by polling RSS across the entire process tree (including child processes). For static analyzers, both cold (uncached) and hot (cached) runs are measured. A <strong>5-minute timeout</strong> is enforced on every run; tools marked as "Timed out" could not complete within this limit. Results are sorted by mean execution time.</p>
+            <p>This project benchmarks PHP <strong>formatters</strong> (<a href="https://github.com/carthage-software/mago">Mago Fmt</a>, <a href="https://github.com/lkrms/pretty-php">Pretty PHP</a>), <strong>linters</strong> (<a href="https://github.com/carthage-software/mago">Mago Lint</a>, <a href="https://github.com/PHP-CS-Fixer/PHP-CS-Fixer">PHP-CS-Fixer</a>, <a href="https://github.com/PHPCSStandards/PHP_CodeSniffer">PHPCS</a>), <strong>static analyzers</strong> (<a href="https://github.com/carthage-software/mago">Mago</a>, <a href="https://github.com/phpstan/phpstan">PHPStan</a>, <a href="https://github.com/vimeo/psalm">Psalm</a>, <a href="https://github.com/phan/phan">Phan</a>), and <strong>architecture guards</strong> (<a href="https://github.com/carthage-software/mago">Mago Guard</a>, <a href="https://github.com/deptrac/deptrac">Deptrac</a>, <a href="https://github.com/boundwize/structarmed">StructArmed</a>) against real-world open-source codebases.</p>
+            <p>All tools are run on the same machine, during the same session, under identical conditions. Every tool is configured at its <strong>strictest settings</strong> to ensure maximum work. Execution time is measured using a built-in profiler with multiple runs. Peak memory usage is calculated by polling RSS across the entire process tree (including child processes). For static analyzers and architecture guards, both cold (uncached) and hot (cached) runs are measured. A <strong>5-minute timeout</strong> is enforced on every run; tools marked as "Timed out" could not complete within this limit. Results are sorted by mean execution time.</p>
             </section>
             <nav>
             <div class="tabs" id="kind-tabs">
             <button class="tab" data-kind="Analyzers">Analyzers</button>
             <button class="tab" data-kind="Formatters">Formatters</button>
             <button class="tab" data-kind="Linters">Linters</button>
+            <button class="tab" data-kind="Architecture Guards">Architecture Guards</button>
             </div>
             <label>Project <select id="project-select">{$projectOptions}</select></label>
             </nav>

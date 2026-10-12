@@ -9,7 +9,7 @@ use Psl\Str;
 /**
  * Each case represents a benchmarkable tool.
  *
- * Mago appears three times (fmt/lint/analyze) because each is a different benchmark target,
+ * Mago appears four times (fmt/lint/analyze/guard) because each is a different benchmark target,
  * even though they share the same binary and package.
  */
 enum Tool: string
@@ -29,12 +29,18 @@ enum Tool: string
     case Psalm = 'psalm';
     case Phan = 'phan';
 
+    // Architecture guards
+    case MagoGuard = 'mago-guard';
+    case Deptrac = 'deptrac';
+    case StructArmed = 'structarmed';
+
     public function getKind(): ToolKind
     {
         return match ($this) {
             self::MagoFmt, self::PrettyPhp => ToolKind::Formatter,
             self::MagoLint, self::PhpCsFixer, self::Phpcs => ToolKind::Linter,
             self::MagoAnalyze, self::PhpStan, self::Psalm, self::Phan => ToolKind::Analyzer,
+            self::MagoGuard, self::Deptrac, self::StructArmed => ToolKind::Guard,
         };
     }
 
@@ -46,13 +52,15 @@ enum Tool: string
     public function getPackageName(): string
     {
         return match ($this) {
-            self::MagoFmt, self::MagoLint, self::MagoAnalyze => 'mago',
+            self::MagoFmt, self::MagoLint, self::MagoAnalyze, self::MagoGuard => 'mago',
             self::PrettyPhp => 'pretty-php',
             self::PhpCsFixer => 'php-cs-fixer',
             self::Phpcs => 'phpcs',
             self::PhpStan => 'phpstan',
             self::Psalm => 'psalm',
             self::Phan => 'phan',
+            self::Deptrac => 'deptrac',
+            self::StructArmed => 'structarmed',
         };
     }
 
@@ -64,13 +72,15 @@ enum Tool: string
     public function getComposerPackage(): string
     {
         return match ($this) {
-            self::MagoFmt, self::MagoLint, self::MagoAnalyze => 'carthage-software/mago',
+            self::MagoFmt, self::MagoLint, self::MagoAnalyze, self::MagoGuard => 'carthage-software/mago',
             self::PrettyPhp => 'lkrms/pretty-php',
             self::PhpCsFixer => 'php-cs-fixer/shim',
             self::Phpcs => 'squizlabs/php_codesniffer',
             self::PhpStan => 'phpstan/phpstan',
             self::Psalm => 'vimeo/psalm',
             self::Phan => 'phan/phan',
+            self::Deptrac => 'deptrac/deptrac',
+            self::StructArmed => 'boundwize/structarmed',
         };
     }
 
@@ -91,6 +101,9 @@ enum Tool: string
             self::PhpStan => 'PHPStan',
             self::Psalm => 'Psalm',
             self::Phan => 'Phan',
+            self::MagoGuard => 'Mago Guard',
+            self::Deptrac => 'Deptrac',
+            self::StructArmed => 'StructArmed',
         };
     }
 
@@ -103,11 +116,14 @@ enum Tool: string
     }
 
     /**
-     * Whether this tool supports caching (only some analyzers).
+     * Whether this tool supports caching (some analyzers and architecture guards).
      */
     public function supportsCaching(): bool
     {
-        return $this === self::PhpStan || $this === self::Psalm || $this === self::Phan;
+        return match ($this) {
+            self::PhpStan, self::Psalm, self::Phan, self::Deptrac, self::StructArmed => true,
+            default => false,
+        };
     }
 
     /**
@@ -122,13 +138,15 @@ enum Tool: string
     public function getConfigFilename(string $version): ?string
     {
         return match ($this) {
-            self::MagoFmt, self::MagoLint, self::MagoAnalyze => 'mago.toml',
+            self::MagoFmt, self::MagoLint, self::MagoAnalyze, self::MagoGuard => 'mago.toml',
             self::PrettyPhp => null,
             self::PhpCsFixer => 'php-cs-fixer.php',
             self::Phpcs => 'phpcs.xml',
             self::PhpStan => 'phpstan.neon',
             self::Psalm => Str\format('psalm-v%s.xml', Str\before($version, '.') ?? $version),
             self::Phan => 'phan.php',
+            self::Deptrac => 'deptrac.yaml',
+            self::StructArmed => 'structarmed.php',
         };
     }
 }

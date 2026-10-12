@@ -117,7 +117,7 @@ final readonly class Setup
 
     /**
      * Process config templates for all tools. Deduplicates by installSlug+config to avoid
-     * processing mago.toml three times for the same Mago version.
+     * processing mago.toml four times for the same Mago version.
      *
      * @param non-empty-string $rootDir
      * @param non-empty-string $ws

@@ -1,6 +1,6 @@
 # PHP Toolchain Benchmarks
 
-Reproducible benchmark suite for PHP **formatters**, **linters**, and **static analyzers**. Compares multiple tools and versions side-by-side across real-world open-source codebases.
+Reproducible benchmark suite for PHP **formatters**, **linters**, **static analyzers**, and **architecture guards**. Compares multiple tools and versions side-by-side across real-world open-source codebases.
 
 Execution time is measured using a built-in profiler with multiple runs. Peak memory is calculated by polling RSS across the entire process tree (including child processes).
 
@@ -8,22 +8,23 @@ Execution time is measured using a built-in profiler with multiple runs. Peak me
 
 ## Tools
 
-| Category       | Tools                                                                                                                                                                            |
-| -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Formatters** | [Mago Fmt](https://github.com/carthage-software/mago), [Pretty PHP](https://github.com/lkrms/pretty-php)                                                                         |
-| **Linters**    | [Mago Lint](https://github.com/carthage-software/mago), [PHP-CS-Fixer](https://github.com/PHP-CS-Fixer/PHP-CS-Fixer), [PHPCS](https://github.com/PHPCSStandards/PHP_CodeSniffer) |
-| **Analyzers**  | [Mago](https://github.com/carthage-software/mago), [PHPStan](https://github.com/phpstan/phpstan), [Psalm](https://github.com/vimeo/psalm), [Phan](https://github.com/phan/phan)  |
+| Category                | Tools                                                                                                                                                                            |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Formatters**          | [Mago Fmt](https://github.com/carthage-software/mago), [Pretty PHP](https://github.com/lkrms/pretty-php)                                                                         |
+| **Linters**             | [Mago Lint](https://github.com/carthage-software/mago), [PHP-CS-Fixer](https://github.com/PHP-CS-Fixer/PHP-CS-Fixer), [PHPCS](https://github.com/PHPCSStandards/PHP_CodeSniffer) |
+| **Analyzers**           | [Mago](https://github.com/carthage-software/mago), [PHPStan](https://github.com/phpstan/phpstan), [Psalm](https://github.com/vimeo/psalm), [Phan](https://github.com/phan/phan)  |
+| **Architecture Guards** | [Mago Guard](https://github.com/carthage-software/mago), [Deptrac](https://github.com/deptrac/deptrac), [StructArmed](https://github.com/boundwize/structarmed)                  |
 
 Multiple versions of the same tool can be benchmarked simultaneously (e.g. Mago 1.7.0 through 1.10.0).
 
 ## Benchmark Types
 
-| Type          | Applies to | Description                                              |
-| ------------- | ---------- | -------------------------------------------------------- |
-| **Formatter** | Formatters | Format the entire project                                |
-| **Linter**    | Linters    | Lint the entire project                                  |
-| **Cold**      | Analyzers  | Cold start, caches cleared before each run               |
-| **Hot**       | Analyzers  | Caches warmed once, then measured without cache clearing |
+| Type          | Applies to                     | Description                                              |
+| ------------- | ------------------------------ | -------------------------------------------------------- |
+| **Formatter** | Formatters                     | Format the entire project                                |
+| **Linter**    | Linters                        | Lint the entire project                                  |
+| **Cold**      | Analyzers, Architecture Guards | Cold start, caches cleared before each run               |
+| **Hot**       | Analyzers, Architecture Guards | Caches warmed once, then measured without cache clearing |
 
 ## Target Projects
 
@@ -63,15 +64,15 @@ open results/index.html
 
 ### CLI Options
 
-| Option              | Default | Description                                                  |
-| ------------------- | ------- | ------------------------------------------------------------ |
-| `--runs N`          | 10      | Number of benchmark runs per tool                            |
-| `--timeout N`       | 5       | Timeout per run in minutes                                   |
-| `--project NAME`    | all     | Filter by project: `psl`, `wordpress`, `magento`             |
-| `--kind NAME`       | all     | Filter by tool kind: `formatter`, `linter`, `analyzer`       |
-| `--tool NAME`       | all     | Filter by tool: `mago-fmt`, `phpstan`, `psalm`, `phan`, etc. |
-| `--php-binary PATH` | current | PHP binary to use for PHP-based tools                        |
-| `--skip-stability`  | false   | Skip the CPU stability check                                 |
+| Option              | Default | Description                                                             |
+| ------------------- | ------- | ----------------------------------------------------------------------- |
+| `--runs N`          | 10      | Number of benchmark runs per tool                                       |
+| `--timeout N`       | 5       | Timeout per run in minutes                                              |
+| `--project NAME`    | all     | Filter by project: `psl`, `wordpress`, `magento`                        |
+| `--kind NAME`       | all     | Filter by tool kind: `formatter`, `linter`, `analyzer`, `guard`         |
+| `--tool NAME`       | all     | Filter by tool: `mago-fmt`, `phpstan`, `psalm`, `phan`, `deptrac`, etc. |
+| `--php-binary PATH` | current | PHP binary to use for PHP-based tools                                   |
+| `--skip-stability`  | false   | Skip the CPU stability check                                            |
 
 ## Results
 
@@ -86,7 +87,7 @@ The dashboard is automatically deployed to GitHub Pages on every push to `main`.
 
 1. Add a case to the `Project` enum in `src/Configuration/Project.php` with repo URL and ref.
 2. Create config templates in `project-configurations/<slug>/` with `{{WORKSPACE}}` and `{{CACHE_DIR}}` placeholders:
-   - `mago.toml`, `phpstan.neon`, `psalm-v6.xml`, `phan.php`, `php-cs-fixer.php`, `phpcs.xml`
+   - `mago.toml`, `phpstan.neon`, `psalm-v6.xml`, `phan.php`, `php-cs-fixer.php`, `phpcs.xml`, `deptrac.yaml`, `structarmed.php`
 3. Run `./src/main.php setup`.
 
 ## Adding a New Tool Version

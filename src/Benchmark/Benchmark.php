@@ -108,7 +108,7 @@ final readonly class Benchmark
                 match ($kind) {
                     ToolKind::Formatter => self::runFormatterBenchmarks($runner, $ctx),
                     ToolKind::Linter => self::runLinterBenchmarks($runner, $ctx),
-                    ToolKind::Analyzer => self::runAnalyzerBenchmarks($runner, $ctx),
+                    ToolKind::Analyzer, ToolKind::Guard => self::runColdHotBenchmarks($runner, $ctx),
                 };
             }
         }
@@ -134,7 +134,11 @@ final readonly class Benchmark
         $runner->runBenchmark('Linter', $ctx);
     }
 
-    private static function runAnalyzerBenchmarks(Runner $runner, RunContext $ctx): void
+    /**
+     * Analyzers and architecture guards: cold (uncached) runs for every tool,
+     * then hot (cached) runs for the tools that support caching.
+     */
+    private static function runColdHotBenchmarks(Runner $runner, RunContext $ctx): void
     {
         $runner->runUncached($ctx);
         $runner->runCached($ctx);

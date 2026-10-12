@@ -19,3 +19,8 @@ check-closure-missing-type-hints = true
 check-arrow-function-missing-type-hints = true
 enforce-class-finality = true
 require-api-or-internal = true
+
+# Mirrors deptrac.yaml: Library must not depend on Examples (Library: ~, Examples: [Library]).
+[[guard.perimeter.restrictions]]
+dependency = "Psl\\Example\\**"
+allow-from = ["Psl\\Example\\"]

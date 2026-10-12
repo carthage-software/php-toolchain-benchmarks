@@ -1,0 +1,29 @@
+deptrac:
+  paths:
+    - {{WORKSPACE}}/src
+    - {{WORKSPACE}}/tests
+  exclude_files:
+    - '#/src/js/#'
+  cache_file: {{CACHE_DIR}}/deptrac.cache
+  analyser:
+    types:
+      - class
+      - class_superglobal
+      - file
+      - function
+      - function_call
+      - function_superglobal
+      - use
+  layers:
+    - name: Core
+      collectors:
+        - type: directory
+          value: {{WORKSPACE}}/src/
+    - name: Tests
+      collectors:
+        - type: directory
+          value: {{WORKSPACE}}/tests/
+  ruleset:
+    Core: ~
+    Tests:
+      - Core

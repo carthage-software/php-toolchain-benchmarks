@@ -17,3 +17,61 @@ check-closure-missing-type-hints = true
 check-arrow-function-missing-type-hints = true
 enforce-class-finality = true
 require-api-or-internal = true
+
+[[guard.perimeter.rules]]
+namespace = "@global"
+permit = [
+    "@self",
+    "@native",
+    "WpOrg\\Requests\\**",
+    "PHPMailer\\PHPMailer\\**",
+    "SimplePie\\**",
+    "Avifinfo\\**",
+    "PHPUnit\\**",
+    "Yoast\\PHPUnitPolyfills\\**",
+]
+
+# Bundled third-party libraries only depend on themselves and PHP.
+[[guard.perimeter.rules]]
+namespace = "WpOrg\\Requests\\"
+permit = ["@self", "@native"]
+
+[[guard.perimeter.rules]]
+namespace = "PHPMailer\\PHPMailer\\"
+permit = ["@self", "@native"]
+
+[[guard.perimeter.rules]]
+namespace = "SimplePie\\"
+permit = ["@self", "@native"]
+
+[[guard.perimeter.rules]]
+namespace = "Avifinfo\\"
+permit = ["@self", "@native"]
+
+[[guard.perimeter.restrictions]]
+dependency = "WP_*"
+deny-from = ["WpOrg\\Requests\\", "PHPMailer\\PHPMailer\\", "SimplePie\\", "Avifinfo\\"]
+
+[[guard.structural.rules]]
+on = "WP_REST_*_Controller"
+target = "class"
+must-extend = "WP_REST_Controller"
+reason = "REST API endpoint controllers extend the base REST controller."
+
+[[guard.structural.rules]]
+on = "WP_Widget_*"
+target = "class"
+must-extend = "WP_Widget"
+reason = "Bundled widgets extend WP_Widget."
+
+[[guard.structural.rules]]
+on = "WP_Customize_*_Control"
+target = "class"
+must-extend = "WP_Customize_Control"
+reason = "Customizer controls extend WP_Customize_Control."
+
+[[guard.structural.rules]]
+on = "Tests_*"
+target = "class"
+must-extend = "WP_UnitTestCase"
+reason = "PHPUnit test cases extend the WordPress base test case."
