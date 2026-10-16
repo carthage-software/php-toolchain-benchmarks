@@ -37,7 +37,7 @@ final readonly class ToolInstaller
         ['phpcs',        'squizlabs/php_codesniffer', '4.0.4'],
         ['phpstan',      'phpstan/phpstan',           '2.3.0'],
         ['psalm',        'vimeo/psalm',               '6.19.1'],
-        ['phan',         'phan/phan',                 '6.0.7'],
+        ['phan',         'phan/phan',                 '6.0.11'],
     ];
 
     /**
